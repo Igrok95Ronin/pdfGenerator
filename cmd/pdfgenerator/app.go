@@ -42,7 +42,12 @@ func main() {
 	//Radio кнопки
 	pdf.SetFont("Arial", "", 12)
 	pdf.Ln(lineHt * 5)
-	pdf.CellFormat(190, lineHt, "[✓] Objednavka", "0", 0, "L", false, 0, "")
+	pdf.CellFormat(38, lineHt, "[✓] Objednavka", "0", 0, "L", false, 0, "")
+	pdf.CellFormat(25, lineHt, "[ ] Nabidka", "0", 0, "C", false, 0, "")
+	pdf.CellFormat(37, lineHt, "[ ] Konzultace", "0", 0, "C", false, 0, "")
+	pdf.CellFormat(37, lineHt, "[✓] Nalehavost", "0", 0, "C", false, 0, "")
+	pdf.CellFormat(25, lineHt, "[ ] Montaz", "0", 0, "C", false, 0, "")
+	pdf.CellFormat(31.6, lineHt, "[✓] Pojisteni", "0", 0, "R", false, 0, "")
 
 	//*
 	//Создаем pdf файл
