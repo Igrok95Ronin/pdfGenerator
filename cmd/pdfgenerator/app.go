@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"github.com/jung-kurt/gofpdf"
-	"os"
 )
 
 func main() {
@@ -12,11 +10,7 @@ func main() {
 	pdf.SetFont("Arial", "B", 16)          // Задаем шрифт, жирность и размер
 
 	// Добавляем шрифт, поддерживающий больше символов
-	pdf.AddUTF8Font("Arial", "", "arial.ttf")
-
-	getwd, _ := os.Getwd()
-
-	fmt.Println(getwd)
+	pdf.AddUTF8Font("Arial", "", "../../ui/static/fonts/arial.ttf")
 
 	//Заголовок документа
 	_, lineHt := pdf.GetFontSize() // высота строки зависит от размера шрифта
