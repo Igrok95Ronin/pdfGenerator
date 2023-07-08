@@ -25,12 +25,13 @@ type PdfDocument interface {
 	AddPage()
 	SetFont()
 	AddUTF8Font()
-	LineHt(float642 float64)
+	LineHt(float64)
 	OutputFileAndClose()
 	Header(string)
 	AddText(string)
 	AddTextRight(string)
 	AddCheckBox(float64, string)
+	TableHeader(string, string)
 }
 
 func newPdfDocument() PdfDocument {
@@ -50,8 +51,6 @@ func newPdfDocument() PdfDocument {
 // Заголовок документа
 func (p *pdfDocument) Header(text string) {
 	p.pdf.CellFormat(190, p.lineHeight, text, "0", 0, "C", false, 0, "") //вывод текста
-	_, lineHt := p.pdf.GetFontSize()
-	p.pdf.Ln(lineHt) //перенос строки
 }
 
 // Верхний блок
@@ -77,9 +76,28 @@ func (p *pdfDocument) AddTextRight(text string) {
 func (p *pdfDocument) AddCheckBox(width float64, text string) {
 	p.pdf.SetFont("Arial", "", 10)
 	_, lineHt := p.pdf.GetFontSize()
-	p.pdf.CellFormat(width, lineHt, text, "1", 0, "C", false, 0, "")
+	p.pdf.CellFormat(width, lineHt*2, text, "1", 0, "C", false, 0, "")
 }
 
+// заголовок таблиц
+func (p *pdfDocument) TableHeader(text, alignStr string) {
+	p.pdf.SetFillColor(52, 116, 178)  // Установка цвета заливки для заголовка
+	p.pdf.SetTextColor(255, 255, 255) // Устанавливает цвет текста
+	p.pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
+
+	widthTable := 48.5
+	heightTable := 14.0
+	x, y := p.pdf.GetXY() // получение текущих координат X и Y
+
+	if text == " Jednotková \n cena bez DPH " {
+		p.pdf.MultiCell(widthTable, 7, text, "1", alignStr, true)
+	} else {
+		p.pdf.MultiCell(widthTable, heightTable, text, "1", alignStr, true)
+	}
+	p.pdf.SetXY(x+widthTable, y) // установка новых координат X и Y, увеличиваем X
+}
+
+// Создание pdf
 func (p *pdfDocument) OutputFileAndClose() {
 	err := p.pdf.OutputFileAndClose(p.outputFileAndClose)
 	if err != nil {
@@ -102,6 +120,7 @@ func (p *pdfDocument) AddUTF8Font() {
 
 // Перенос на новую строчку
 func (p *pdfDocument) LineHt(ht float64) {
+	p.pdf.SetFont("Arial", "", 10)
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.Ln(lineHt * ht) //перенос строки
 }
@@ -116,18 +135,19 @@ func main() {
 
 	//*Заголовок документа
 	pdf.Header("F A K T U R A")
+	pdf.LineHt(1)
 
 	//*Верхний блок
-	//Первая строка
+	//-Первая строка
 	pdf.AddText("Kamil Teplý")
 
-	//Правый строка ID
+	//-Правый строка ID
 	pdf.AddTextRight("ID: CZ-3135")
 
-	//Вторая строка
+	//-Вторая строка
 	pdf.AddText("Francouzská 2")
 
-	//Третья строка
+	//-Третья строка
 	pdf.AddText("12000 Praha")
 	pdf.LineHt(7)
 
@@ -138,6 +158,14 @@ func main() {
 	pdf.AddCheckBox(37, "[✓] Nalehavost")
 	pdf.AddCheckBox(25, "[ ] Montaz")
 	pdf.AddCheckBox(31.6, "[✓] Pojisteni")
+	pdf.LineHt(3)
+
+	//*Таблица
+	//-Header
+	pdf.TableHeader(" Popis/Výkon ", "L")
+	pdf.TableHeader(" Množství ", "C")
+	pdf.TableHeader(" Cena za kus ", "C")
+	pdf.TableHeader(" Jednotková \n cena bez DPH ", "C")
 
 	//***
 	//*Создаем pdf файл
