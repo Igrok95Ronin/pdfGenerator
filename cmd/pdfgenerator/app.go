@@ -77,7 +77,7 @@ func (p *pdfDocument) AddTextRight(text string) {
 func (p *pdfDocument) AddCheckBox(width float64, text string) {
 	p.pdf.SetFont("Arial", "", 10)
 	_, lineHt := p.pdf.GetFontSize()
-	p.pdf.CellFormat(width, lineHt*2, text, "1", 0, "C", false, 0, "")
+	p.pdf.CellFormat(width, lineHt*2, text, "0", 0, "C", false, 0, "")
 }
 
 // заголовок таблиц
