@@ -7,8 +7,12 @@ import (
 
 var _ PdfDocument = &pdfDocument{}
 
+type pdf struct {
+	*gofpdf.Fpdf
+}
+
 type pdfDocument struct {
-	pdf                *gofpdf.Fpdf
+	pdf
 	fontFamily         string
 	fontStyle          string
 	fontSize           float64
@@ -29,7 +33,9 @@ type PdfDocument interface {
 
 func newPdfDocument() PdfDocument {
 	return &pdfDocument{
-		gofpdf.New("P", "mm", "A4", ""),
+		pdf{
+			gofpdf.New("P", "mm", "A4", ""),
+		},
 		"Arial",
 		"B",
 		16,
@@ -87,6 +93,7 @@ func (p *pdfDocument) AddUTF8Font() {
 
 // test
 func main() {
+
 	pdf := newPdfDocument()
 	pdf.AddPage()
 	pdf.AddUTF8Font() // Добавляем шрифт, поддерживающий больше символов
