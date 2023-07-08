@@ -63,6 +63,55 @@ func main() {
 	pdf.CellFormat(widthTable, heightTable, "Cena za kus", "1", 0, "C", true, 0, "")
 	pdf.MultiCell(widthTable, 7, " Jednotková \n cena bez DPH ", "1", "C", true)
 
+	//Body
+	pdf.Ln(0)
+	pdf.SetFillColor(255, 255, 255) // Установка цвета заливки для заголовка
+	pdf.SetTextColor(0, 0, 0)       // Устанавливает цвет текста
+
+	pdf.CellFormat(widthTable, heightTable, " Vyjezd ", "1", 0, "L", true, 0, "")
+	pdf.CellFormat(widthTable, heightTable, "2", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(widthTable, heightTable, "600.00", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(widthTable, heightTable, "1200.00", "1", 0, "C", true, 0, "")
+
+	pdf.Ln(14)
+	pdf.CellFormat(widthTable, heightTable, " Odmitani ", "1", 0, "L", true, 0, "")
+	pdf.CellFormat(widthTable, heightTable, "1", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(widthTable, heightTable, "2600.00", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(widthTable, heightTable, "2600.00", "1", 0, "C", true, 0, "")
+
+	//*Нижний блок
+	//line 1
+	pdf.Ln(20)
+	widthDownBlock := 48.5
+	pdf.CellFormat(widthDownBlock, lineHt+2, " Částka obdržena: ", "0", 0, "L", false, 0, "")
+	pdf.CellFormat(widthDownBlock, lineHt+2, "  ", "0", 0, "C", false, 0, "")
+	pdf.CellFormat(widthDownBlock+20.5, lineHt+2, " Mezisoučet: ", "0", 0, "R", false, 0, "")
+	pdf.CellFormat(28, lineHt+2, " 3800.00 ", "0", 0, "R", false, 0, "")
+	//line 2
+	pdf.Ln(lineHt + 2)
+	pdf.CellFormat(widthDownBlock, lineHt+2, " Hotově: ", "0", 0, "L", false, 0, "")
+	pdf.CellFormat(widthDownBlock, lineHt+2, " 0.00 ", "0", 0, "C", false, 0, "")
+	pdf.CellFormat(widthDownBlock+20.5, lineHt+2, "  ", "0", 0, "R", false, 0, "")
+	pdf.CellFormat(28, lineHt+2, "  ", "0", 0, "R", false, 0, "")
+	//line 3
+	pdf.Ln(lineHt + 2)
+	pdf.CellFormat(widthDownBlock, lineHt+2, " Kartou: ", "0", 0, "L", false, 0, "")
+	pdf.CellFormat(widthDownBlock, lineHt+2, " 0.00 ", "0", 0, "C", false, 0, "")
+	pdf.CellFormat(widthDownBlock+20.5, lineHt+2, " DPH 21 %: ", "0", 0, "R", false, 0, "")
+	pdf.CellFormat(28, lineHt+2, " 798.00 ", "0", 0, "R", false, 0, "")
+	//line 4
+	pdf.Ln(lineHt + 2)
+	pdf.CellFormat(widthDownBlock, lineHt+2, " Převod: ", "0", 0, "L", false, 0, "")
+	pdf.CellFormat(widthDownBlock, lineHt+2, " 0.00 ", "0", 0, "C", false, 0, "")
+	pdf.CellFormat(widthDownBlock+20.5, lineHt+2, "  ", "0", 0, "R", false, 0, "")
+	pdf.CellFormat(28, lineHt+2, "  ", "0", 0, "R", false, 0, "")
+	//line 5
+	pdf.Ln(lineHt + 2)
+	pdf.CellFormat(widthDownBlock, lineHt+2, " Dluh: ", "0", 0, "L", false, 0, "")
+	pdf.CellFormat(widthDownBlock, lineHt+2, " 4598.00 ", "0", 0, "C", false, 0, "")
+	pdf.CellFormat(widthDownBlock+20.5, lineHt+2, " Celková částka: ", "0", 0, "R", false, 0, "")
+	pdf.CellFormat(28, lineHt+2, " 4598.00 ", "0", 0, "R", false, 0, "")
+
 	//*
 	//Создаем pdf файл
 	err := pdf.OutputFileAndClose("../../yourContract.pdf")
