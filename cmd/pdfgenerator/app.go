@@ -49,6 +49,20 @@ func main() {
 	pdf.CellFormat(25, lineHt, "[ ] Montaz", "0", 0, "C", false, 0, "")
 	pdf.CellFormat(31.6, lineHt, "[✓] Pojisteni", "0", 0, "R", false, 0, "")
 
+	//*Таблица
+	//Header
+	pdf.Ln(10)
+	pdf.SetFillColor(52, 116, 178)  // Установка цвета заливки для заголовка
+	pdf.SetTextColor(255, 255, 255) // Устанавливает цвет текста
+	pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
+
+	widthTable := 47.5
+	heightTable := 16.0
+	pdf.CellFormat(widthTable, heightTable, " Popis/Výkon ", "1", 0, "L", true, 0, "")
+	pdf.CellFormat(widthTable, heightTable, "Množství", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(widthTable, heightTable, "Cena za kus", "1", 0, "C", true, 0, "")
+	pdf.MultiCell(widthTable, 8, " Jednotková \n cena bez DPH ", "1", "C", true)
+
 	//*
 	//Создаем pdf файл
 	err := pdf.OutputFileAndClose("../../yourContract.pdf")
