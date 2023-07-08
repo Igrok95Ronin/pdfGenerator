@@ -4,6 +4,7 @@ import (
 	"github.com/jung-kurt/gofpdf"
 )
 
+// test
 func main() {
 	pdf := gofpdf.New("P", "mm", "A4", "")                               //
 	pdf.AddPage()                                                        //
