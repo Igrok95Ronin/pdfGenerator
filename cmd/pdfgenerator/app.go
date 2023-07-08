@@ -32,6 +32,7 @@ type PdfDocument interface {
 	AddTextRight(string)
 	AddCheckBox(float64, string)
 	TableHeader(string, string)
+	TableBody(string, string)
 }
 
 func newPdfDocument() PdfDocument {
@@ -95,6 +96,15 @@ func (p *pdfDocument) TableHeader(text, alignStr string) {
 		p.pdf.MultiCell(widthTable, heightTable, text, "1", alignStr, true)
 	}
 	p.pdf.SetXY(x+widthTable, y) // установка новых координат X и Y, увеличиваем X
+}
+
+// тело таблицы
+func (p *pdfDocument) TableBody(text, alignStr string) {
+	widthTable := 48.5
+	heightTable := 14.0
+	p.pdf.SetFillColor(255, 255, 255) // Установка цвета заливки для заголовка
+	p.pdf.SetTextColor(0, 0, 0)       // Устанавливает цвет текста
+	p.pdf.CellFormat(widthTable, heightTable, text, "1", 0, alignStr, true, 0, "")
 }
 
 // Создание pdf
@@ -166,41 +176,23 @@ func main() {
 	pdf.TableHeader(" Množství ", "C")
 	pdf.TableHeader(" Cena za kus ", "C")
 	pdf.TableHeader(" Jednotková \n cena bez DPH ", "C")
+	pdf.LineHt(4)
+
+	//-Body
+	pdf.TableBody(" Vyjezd ", "L")
+	pdf.TableBody(" 2 ", "C")
+	pdf.TableBody(" 600.00 ", "C")
+	pdf.TableBody(" 1200.00 ", "C")
+	pdf.LineHt(4)
+	pdf.TableBody(" Odmitani ", "L")
+	pdf.TableBody(" 1 ", "C")
+	pdf.TableBody(" 2600.00 ", "C")
+	pdf.TableBody(" 2600.00 ", "C")
 
 	//***
 	//*Создаем pdf файл
 	pdf.OutputFileAndClose()
 
-	////*Таблица
-	////Header
-	//pdf.Ln(10)
-	//pdf.SetFillColor(52, 116, 178)  // Установка цвета заливки для заголовка
-	//pdf.SetTextColor(255, 255, 255) // Устанавливает цвет текста
-	//pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
-	//
-	//widthTable := 48.5
-	//heightTable := 14.0
-	//pdf.CellFormat(widthTable, heightTable, " Popis/Výkon ", "1", 0, "L", true, 0, "")
-	//pdf.CellFormat(widthTable, heightTable, "Množství", "1", 0, "C", true, 0, "")
-	//pdf.CellFormat(widthTable, heightTable, "Cena za kus", "1", 0, "C", true, 0, "")
-	//pdf.MultiCell(widthTable, 7, " Jednotková \n cena bez DPH ", "1", "C", true)
-	//
-	////Body
-	//pdf.Ln(0)
-	//pdf.SetFillColor(255, 255, 255) // Установка цвета заливки для заголовка
-	//pdf.SetTextColor(0, 0, 0)       // Устанавливает цвет текста
-	//
-	//pdf.CellFormat(widthTable, heightTable, " Vyjezd ", "1", 0, "L", true, 0, "")
-	//pdf.CellFormat(widthTable, heightTable, "2", "1", 0, "C", true, 0, "")
-	//pdf.CellFormat(widthTable, heightTable, "600.00", "1", 0, "C", true, 0, "")
-	//pdf.CellFormat(widthTable, heightTable, "1200.00", "1", 0, "C", true, 0, "")
-	//
-	//pdf.Ln(14)
-	//pdf.CellFormat(widthTable, heightTable, " Odmitani ", "1", 0, "L", true, 0, "")
-	//pdf.CellFormat(widthTable, heightTable, "1", "1", 0, "C", true, 0, "")
-	//pdf.CellFormat(widthTable, heightTable, "2600.00", "1", 0, "C", true, 0, "")
-	//pdf.CellFormat(widthTable, heightTable, "2600.00", "1", 0, "C", true, 0, "")
-	//
 	////*Нижний блок
 	////line 1
 	//pdf.Ln(20)
