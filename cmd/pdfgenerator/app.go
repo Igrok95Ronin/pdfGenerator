@@ -40,14 +40,14 @@ func main() {
 	pdf.CellFormat(190, lineHt, "12000 Praha", "0", 0, "L", false, 0, "")
 
 	//Radio кнопки
-	pdf.SetFont("Arial", "", 12)
+	pdf.SetFont("Arial", "", 10)
 	pdf.Ln(lineHt * 5)
-	pdf.CellFormat(38, lineHt, "[✓] Objednavka", "0", 0, "L", false, 0, "")
+	pdf.CellFormat(38, lineHt, "[✓] Objednavka", "0", 0, "C", false, 0, "")
 	pdf.CellFormat(25, lineHt, "[ ] Nabidka", "0", 0, "C", false, 0, "")
 	pdf.CellFormat(37, lineHt, "[ ] Konzultace", "0", 0, "C", false, 0, "")
 	pdf.CellFormat(37, lineHt, "[✓] Nalehavost", "0", 0, "C", false, 0, "")
 	pdf.CellFormat(25, lineHt, "[ ] Montaz", "0", 0, "C", false, 0, "")
-	pdf.CellFormat(31.6, lineHt, "[✓] Pojisteni", "0", 0, "R", false, 0, "")
+	pdf.CellFormat(31.6, lineHt, "[✓] Pojisteni", "0", 0, "C", false, 0, "")
 
 	//*Таблица
 	//Header
@@ -56,7 +56,7 @@ func main() {
 	pdf.SetTextColor(255, 255, 255) // Устанавливает цвет текста
 	pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
 
-	widthTable := 47.5
+	widthTable := 48.5
 	heightTable := 16.0
 	pdf.CellFormat(widthTable, heightTable, " Popis/Výkon ", "1", 0, "L", true, 0, "")
 	pdf.CellFormat(widthTable, heightTable, "Množství", "1", 0, "C", true, 0, "")
