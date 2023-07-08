@@ -57,11 +57,11 @@ func main() {
 	pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
 
 	widthTable := 48.5
-	heightTable := 16.0
+	heightTable := 14.0
 	pdf.CellFormat(widthTable, heightTable, " Popis/Výkon ", "1", 0, "L", true, 0, "")
 	pdf.CellFormat(widthTable, heightTable, "Množství", "1", 0, "C", true, 0, "")
 	pdf.CellFormat(widthTable, heightTable, "Cena za kus", "1", 0, "C", true, 0, "")
-	pdf.MultiCell(widthTable, 8, " Jednotková \n cena bez DPH ", "1", "C", true)
+	pdf.MultiCell(widthTable, 7, " Jednotková \n cena bez DPH ", "1", "C", true)
 
 	//*
 	//Создаем pdf файл
