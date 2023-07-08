@@ -25,10 +25,12 @@ type PdfDocument interface {
 	AddPage()
 	SetFont()
 	AddUTF8Font()
+	LineHt(float642 float64)
 	OutputFileAndClose()
 	Header(string)
 	AddText(string)
 	AddTextRight(string)
+	AddCheckBox(float64, string)
 }
 
 func newPdfDocument() PdfDocument {
@@ -47,28 +49,35 @@ func newPdfDocument() PdfDocument {
 
 // Заголовок документа
 func (p *pdfDocument) Header(text string) {
-	p.pdf.CellFormat(190, p.lineHeight, text, "0", 0, "C", false, 0, "")
+	p.pdf.CellFormat(190, p.lineHeight, text, "0", 0, "C", false, 0, "") //вывод текста
 	_, lineHt := p.pdf.GetFontSize()
-	p.pdf.Ln(lineHt)
+	p.pdf.Ln(lineHt) //перенос строки
 }
 
 // Верхний блок
 func (p *pdfDocument) AddText(text string) {
+	p.pdf.SetFont("Arial", "", 14) //шрифт,жирность,размер
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.Ln(lineHt * 2)
-	p.pdf.SetFont("Arial", "", 14)
 
 	p.pdf.CellFormat(95, lineHt*3, text, "0", 0, "L", false, 0, "")
 }
 
 // Верхний блок,правая строка
 func (p *pdfDocument) AddTextRight(text string) {
-	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.SetFont("Arial", "B", 14)
-	p.pdf.SetTextColor(52, 116, 178)
+	_, lineHt := p.pdf.GetFontSize()
+	p.pdf.SetTextColor(52, 116, 178) //цвет текста
 
 	p.pdf.CellFormat(95, lineHt*3, text, "0", 0, "R", false, 0, "")
 	p.pdf.SetTextColor(0, 0, 0)
+}
+
+// AddCheckBox
+func (p *pdfDocument) AddCheckBox(width float64, text string) {
+	p.pdf.SetFont("Arial", "", 10)
+	_, lineHt := p.pdf.GetFontSize()
+	p.pdf.CellFormat(width, lineHt, text, "1", 0, "C", false, 0, "")
 }
 
 func (p *pdfDocument) OutputFileAndClose() {
@@ -89,6 +98,12 @@ func (p *pdfDocument) SetFont() {
 
 func (p *pdfDocument) AddUTF8Font() {
 	p.pdf.AddUTF8Font(p.fontFamily, "", p.fontFilePath)
+}
+
+// Перенос на новую строчку
+func (p *pdfDocument) LineHt(ht float64) {
+	_, lineHt := p.pdf.GetFontSize()
+	p.pdf.Ln(lineHt * ht) //перенос строки
 }
 
 // test
@@ -114,49 +129,20 @@ func main() {
 
 	//Третья строка
 	pdf.AddText("12000 Praha")
+	pdf.LineHt(7)
+
+	//*CheckBox
+	pdf.AddCheckBox(38, "[✓] Objednavka")
+	pdf.AddCheckBox(25, "[ ] Nabidka")
+	pdf.AddCheckBox(37, "[ ] Konzultace")
+	pdf.AddCheckBox(37, "[✓] Nalehavost")
+	pdf.AddCheckBox(25, "[ ] Montaz")
+	pdf.AddCheckBox(31.6, "[✓] Pojisteni")
 
 	//***
 	//*Создаем pdf файл
 	pdf.OutputFileAndClose()
 
-	//*
-	//Заголовок документа
-	//pdf.CellFormat(190, lineHt, "F A K T U R A", "0", 0, "C", false, 0, "")
-
-	////*
-	////Верхний блок
-	////Первая строка
-	//pdf.SetFont("Arial", "", 14)
-	//pdf.Ln(lineHt * 2) //переход на новую строку
-	//pdf.CellFormat(95, lineHt, "Kamil Teplý", "0", 0, "L", false, 0, "")
-	//
-	////*
-	////Правый блок ID
-	//pdf.SetFont("Arial", "B", 14)
-	//pdf.SetTextColor(52, 116, 178) //задает цвет текста rgb
-	//pdf.CellFormat(95, lineHt, "ID: CZ-3135", "0", 0, "R", false, 0, "")
-	//
-	////*
-	////Вторая строка
-	//pdf.SetFont("Arial", "", 14)
-	//pdf.SetTextColor(0, 0, 0)
-	//pdf.Ln(lineHt)
-	//pdf.CellFormat(190, lineHt, "Francouzská 2", "0", 0, "L", false, 0, "")
-	//
-	////Третья строка
-	//pdf.Ln(lineHt)
-	//pdf.CellFormat(190, lineHt, "12000 Praha", "0", 0, "L", false, 0, "")
-	//
-	////Radio кнопки
-	//pdf.SetFont("Arial", "", 10)
-	//pdf.Ln(lineHt * 5)
-	//pdf.CellFormat(38, lineHt, "[✓] Objednavka", "0", 0, "C", false, 0, "")
-	//pdf.CellFormat(25, lineHt, "[ ] Nabidka", "0", 0, "C", false, 0, "")
-	//pdf.CellFormat(37, lineHt, "[ ] Konzultace", "0", 0, "C", false, 0, "")
-	//pdf.CellFormat(37, lineHt, "[✓] Nalehavost", "0", 0, "C", false, 0, "")
-	//pdf.CellFormat(25, lineHt, "[ ] Montaz", "0", 0, "C", false, 0, "")
-	//pdf.CellFormat(31.6, lineHt, "[✓] Pojisteni", "0", 0, "C", false, 0, "")
-	//
 	////*Таблица
 	////Header
 	//pdf.Ln(10)
