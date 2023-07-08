@@ -22,7 +22,7 @@ type PdfDocument interface {
 	SetFont()
 	AddUTF8Font()
 	OutputFileAndClose()
-	Header()
+	Header(string)
 	AddText(string)
 	AddTextRight(string)
 }
@@ -40,8 +40,8 @@ func newPdfDocument() PdfDocument {
 }
 
 // Заголовок документа
-func (p *pdfDocument) Header() {
-	p.pdf.CellFormat(190, p.lineHeight, "F A K T U R A ", "0", 0, "C", false, 0, "")
+func (p *pdfDocument) Header(text string) {
+	p.pdf.CellFormat(190, p.lineHeight, text, "0", 0, "C", false, 0, "")
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.Ln(lineHt)
 }
@@ -93,7 +93,7 @@ func main() {
 	pdf.SetFont()     // Задаем шрифт, жирность и размер
 
 	//*Заголовок документа
-	pdf.Header()
+	pdf.Header("F A K T U R A")
 
 	//*Верхний блок
 	//Первая строка
