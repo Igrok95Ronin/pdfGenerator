@@ -57,16 +57,16 @@ func (p *pdfDocument) Header(text string) {
 
 // Верхний блок
 func (p *pdfDocument) AddText(text string) {
-	p.pdf.SetFont("Arial", "", 14) //шрифт,жирность,размер
+	p.pdf.SetFont("Arial", "", 12) //шрифт,жирность,размер
 	_, lineHt := p.pdf.GetFontSize()
-	p.pdf.Ln(lineHt * 2)
+	p.pdf.Ln(lineHt * 1.5)
 
 	p.pdf.CellFormat(95, lineHt*3, text, "0", 0, "L", false, 0, "")
 }
 
 // Верхний блок,правая строка
 func (p *pdfDocument) AddTextRight(text string) {
-	p.pdf.SetFont("Arial", "B", 14)
+	p.pdf.SetFont("Arial", "B", 12)
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.SetTextColor(52, 116, 178) //цвет текста
 
@@ -153,7 +153,7 @@ func main() {
 
 	//*Заголовок документа
 	pdf.Header("F A K T U R A")
-	pdf.LineHt(1)
+	pdf.LineHt(2)
 
 	//*Верхний блок
 	//-Первая строка
