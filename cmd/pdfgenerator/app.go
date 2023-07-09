@@ -88,16 +88,18 @@ func (p *pdfDocument) TableHeader(text, alignStr string) {
 	p.pdf.SetTextColor(255, 255, 255) // Устанавливает цвет текста
 	p.pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
 
-	widthTable := 48.5
-	heightTable := 14.0
+	const (
+		WidthTable  = 48.5
+		HeightTable = 14
+	)
 	x, y := p.pdf.GetXY() // получение текущих координат X и Y
 
 	if text == " Jednotková \n cena bez DPH " {
-		p.pdf.MultiCell(widthTable, 7, text, "1", alignStr, true)
+		p.pdf.MultiCell(WidthTable, 7, text, "1", alignStr, true)
 	} else {
-		p.pdf.MultiCell(widthTable, heightTable, text, "1", alignStr, true)
+		p.pdf.MultiCell(WidthTable, HeightTable, text, "1", alignStr, true)
 	}
-	p.pdf.SetXY(x+widthTable, y) // установка новых координат X и Y, увеличиваем X
+	p.pdf.SetXY(x+WidthTable, y) // установка новых координат X и Y, увеличиваем X
 }
 
 // тело таблицы
