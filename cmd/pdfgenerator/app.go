@@ -53,6 +53,8 @@ func newPdfDocument() PdfDocument {
 
 // Заголовок документа
 func (p *pdfDocument) Header(text string) {
+	p.pdf.AddUTF8Font("DejaVuSans", "B", "../../ui/static/fonts/DejaVuSans-Bold.ttf")
+	p.pdf.SetFont("DejaVuSans", "B", 16)                                 //шрифт,жирность,размер
 	p.pdf.CellFormat(190, p.lineHeight, text, "0", 0, "C", false, 0, "") //вывод текста
 }
 
@@ -67,7 +69,8 @@ func (p *pdfDocument) AddText(text string) {
 
 // Верхний блок,правая строка
 func (p *pdfDocument) AddTextRight(text string) {
-	p.pdf.SetFont("Arial", "B", 12)
+	p.pdf.AddUTF8Font("DejaVuSans", "B", "../../ui/static/fonts/DejaVuSans-Bold.ttf")
+	p.pdf.SetFont("DejaVuSans", "B", 12)
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.SetTextColor(52, 116, 178) //цвет текста
 
@@ -87,6 +90,9 @@ func (p *pdfDocument) TableHeader(text, alignStr string) {
 	p.pdf.SetFillColor(52, 116, 178)  // Установка цвета заливки для заголовка
 	p.pdf.SetTextColor(255, 255, 255) // Устанавливает цвет текста
 	p.pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
+
+	p.pdf.AddUTF8Font("DejaVuSans", "B", "../../ui/static/fonts/DejaVuSans-Bold.ttf")
+	p.pdf.SetFont("DejaVuSans", "B", 10) //шрифт,жирность,размер
 
 	const (
 		WidthTable  = 48.5
