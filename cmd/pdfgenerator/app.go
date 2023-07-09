@@ -26,7 +26,7 @@ type PdfDocument interface {
 	SetFont()
 	AddUTF8Font()
 	LineHt(float64)
-	OutputFileAndClose()
+	OutputFileAndClose() error
 	Header(string)
 	AddText(string)
 	AddTextRight(string)
@@ -133,12 +133,8 @@ func (p *pdfDocument) Footer(text string) {
 }
 
 // Создание pdf
-func (p *pdfDocument) OutputFileAndClose() {
-	err := p.pdf.OutputFileAndClose(p.outputFileAndClose)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+func (p *pdfDocument) OutputFileAndClose() error {
+	return p.pdf.OutputFileAndClose(p.outputFileAndClose)
 }
 
 func (p *pdfDocument) AddPage() {
@@ -254,6 +250,9 @@ func main() {
 	pdf.Footer("Rychly servis bohemia 24/7 s.r.o, IČO 17973538, Braunerova 563/7, Libeň, 180 00 Praha 8\nBankovní účet: 5040636073/0800")
 
 	//*Создаем pdf файл
-	pdf.OutputFileAndClose()
+	err := pdf.OutputFileAndClose()
+	if err != nil {
+		log.Fatalf("Не удалось вывести файл и закрыть PDF-документ: %v", err)
+	}
 
 }
