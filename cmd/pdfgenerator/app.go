@@ -34,6 +34,7 @@ type PdfDocument interface {
 	TableHeader(string, string)
 	TableBody(string, string)
 	BottomBlock(float64, string, string)
+	Footer(string)
 }
 
 func newPdfDocument() PdfDocument {
@@ -113,6 +114,20 @@ func (p *pdfDocument) BottomBlock(width float64, text, alignStr string) {
 	//widthDownBlock := 48.5
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.CellFormat(width, lineHt+2, text, "0", 0, alignStr, false, 0, "")
+}
+
+// Footer
+func (p *pdfDocument) Footer(text string) {
+	// Задаем размер нижнего поля
+	bottomMargin := 28.0
+	// Получаем размеры страницы
+	_, pageHeight := p.pdf.GetPageSize()
+	p.pdf.SetFont("Arial", "", 10) // Установка шрифта перед выводом текста
+	_, lineHt := p.pdf.GetFontSize()
+	// Устанавливаем новую высоту Y, вычитая нижний отступ и высоту строки из высоты страницы
+	p.pdf.SetY(pageHeight - bottomMargin - lineHt)
+	p.pdf.MultiCell(190, lineHt*1.5, text, "0", "C", false)
+
 }
 
 // Создание pdf
@@ -233,23 +248,10 @@ func main() {
 	pdf.BottomBlock(69, "Celková částka:", "R")
 	pdf.BottomBlock(28, "4598.00", "R")
 
-	//***
+	//*Footer
+	pdf.Footer("Rychly servis bohemia 24/7 s.r.o, IČO 17973538, Braunerova 563/7, Libeň, 180 00 Praha 8\nBankovní účet: 5040636073/0800")
+
 	//*Создаем pdf файл
 	pdf.OutputFileAndClose()
 
-	////*Нижний блок
-	//// Задаем размер нижнего поля
-	//bottomMargin := 26.0
-	//// Получаем размеры страницы
-	//_, pageHeight := pdf.GetPageSize()
-	//// Устанавливаем новую высоту Y, вычитая нижний отступ и высоту строки из высоты страницы
-	//pdf.SetY(pageHeight - bottomMargin - lineHt)
-	//pdf.SetFont("Arial", "", 11) // Установка шрифта перед выводом текста
-	//pdf.MultiCell(190, lineHt, "Rychly servis bohemia 24/7 s.r.o, IČO 17973538, Braunerova 563/7, Libeň, 180 00 Praha 8\nBankovní účet: 5040636073/0800", "0", "C", false)
-
-	//*Создаем pdf файл
-	//err := pdf.OutputFileAndClose("../../yourContract.pdf")
-	//if err != nil {
-	//	panic(err)
-	//}
 }
