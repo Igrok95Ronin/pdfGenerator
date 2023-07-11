@@ -59,7 +59,6 @@ type DataJsonStruct struct {
 
 // Декодирование JSON
 func (d *DataJsonStruct) Parse(url string) {
-	// URL, откуда мы хотим получить JSON
 
 	// Выполнение HTTP GET запроса
 	resp, err := http.Get(url)

@@ -166,10 +166,10 @@ func (p *pdfDocument) LineHt(ht float64) {
 	p.pdf.Ln(lineHt * ht) //перенос строки
 }
 
-func Pdf() {
+func Pdf(url string) {
 
 	jsn := &json.DataJsonStruct{}
-	jsn.Parse("https://app.o95.info/receipt?secret=secret72353&id=205887")
+	jsn.Parse(url)
 	fmt.Println(jsn.Amount)
 
 	//PDF
