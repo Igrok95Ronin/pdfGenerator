@@ -1,4 +1,4 @@
-package jsonPk
+package json
 
 import (
 	"encoding/json"

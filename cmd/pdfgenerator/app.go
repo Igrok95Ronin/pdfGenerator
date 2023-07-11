@@ -6,5 +6,5 @@ import (
 
 // test
 func main() {
-	pdfPk.PdfPk()
+	pdf.Pdf()
 }

@@ -1,4 +1,4 @@
-package pdfPk
+package pdf
 
 import (
 	"fmt"
@@ -166,9 +166,9 @@ func (p *pdfDocument) LineHt(ht float64) {
 	p.pdf.Ln(lineHt * ht) //перенос строки
 }
 
-func PdfPk() {
+func Pdf() {
 
-	jsn := &jsonPk.DataJsonStruct{}
+	jsn := &json.DataJsonStruct{}
 	jsn.Parse("https://app.o95.info/receipt?secret=secret72353&id=205887")
 	fmt.Println(jsn.Amount)
 
