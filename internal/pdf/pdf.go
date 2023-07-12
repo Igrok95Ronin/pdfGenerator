@@ -5,6 +5,7 @@ import (
 	"github.com/jung-kurt/gofpdf"
 	"log"
 	"pdgGenerator/internal/json"
+	"strconv"
 )
 
 var _ PdfDocument = &pdfDocument{}
@@ -114,11 +115,13 @@ func (p *pdfDocument) TableHeader(text, alignStr string) {
 
 // тело таблицы
 func (p *pdfDocument) TableBody(text, alignStr string) {
-	widthTable := 48.5
-	heightTable := 14.0
+	const (
+		WidthTable  = 48.5
+		HeightTable = 14
+	)
 	p.pdf.SetFillColor(255, 255, 255) // Установка цвета заливки для заголовка
 	p.pdf.SetTextColor(0, 0, 0)       // Устанавливает цвет текста
-	p.pdf.CellFormat(widthTable, heightTable, text, "1", 0, alignStr, true, 0, "")
+	p.pdf.CellFormat(WidthTable, HeightTable, text, "1", 0, alignStr, true, 0, "")
 }
 
 // Нижний блок
@@ -214,15 +217,15 @@ func Pdf(url string) {
 	pdf.LineHt(4)
 
 	//-Body
-	pdf.TableBody(" Vyjezd ", "L")
-	pdf.TableBody(" 2 ", "C")
-	pdf.TableBody(" 600.00 ", "C")
-	pdf.TableBody(" 1200.00 ", "C")
+	pdf.TableBody(" "+jsn.Expenses[0].Name, "L")
+	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[0].Amount, 'f', -1, 64), "C")
+	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[0].Price, 'f', -1, 64), "C")
+	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[0].PriceBuy, 'f', -1, 64), "C")
 	pdf.LineHt(4)
-	pdf.TableBody(" Odmitani ", "L")
-	pdf.TableBody(" 1 ", "C")
-	pdf.TableBody(" 2600.00 ", "C")
-	pdf.TableBody(" 2600.00 ", "C")
+	pdf.TableBody(" "+jsn.Expenses[1].Name, "L")
+	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[1].Amount, 'f', -1, 64), "C")
+	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[1].Price, 'f', -1, 64), "C")
+	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[1].PriceBuy, 'f', -1, 64), "C")
 	pdf.LineHt(6)
 
 	//*Нижний блок
@@ -235,28 +238,28 @@ func Pdf(url string) {
 
 	//-line 2
 	pdf.BottomBlock(48.5, "Hotově:", "L")
-	pdf.BottomBlock(48.5, "0.00", "L")
+	pdf.BottomBlock(48.5, jsn.AmountCash, "L")
 	pdf.BottomBlock(69, "", "R")
 	pdf.BottomBlock(28, "", "R")
 	pdf.LineHt(2)
 
 	//-line 3
 	pdf.BottomBlock(48.5, "Kartou:", "L")
-	pdf.BottomBlock(48.5, "0.00", "L")
+	pdf.BottomBlock(48.5, jsn.AmountATM, "L")
 	pdf.BottomBlock(69, "DPH 21 %:", "R")
 	pdf.BottomBlock(28, "798.00", "R")
 	pdf.LineHt(2)
 
 	//-line 4
 	pdf.BottomBlock(48.5, "Převod:", "L")
-	pdf.BottomBlock(48.5, "0.00", "L")
+	pdf.BottomBlock(48.5, jsn.AmountOnline, "L")
 	pdf.BottomBlock(69, "", "R")
 	pdf.BottomBlock(28, "", "R")
 	pdf.LineHt(2)
 
 	//-line 5
 	pdf.BottomBlock(48.5, "Dluh:", "L")
-	pdf.BottomBlock(48.5, "4598.00", "L")
+	pdf.BottomBlock(48.5, jsn.AmountCredit, "L")
 	pdf.BottomBlock(69, "Celková částka:", "R")
 	pdf.BottomBlock(28, "4598.00", "R")
 

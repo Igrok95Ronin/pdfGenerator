@@ -31,7 +31,7 @@ type DataJsonStruct struct {
 	EmployeeFirm string    `json:"EmployeeFirm"`
 	Expenses     []struct {
 		Name     string  `json:"Name"`
-		Amount   int     `json:"Amount"`
+		Amount   float64 `json:"Amount"`
 		Price    float64 `json:"Price"`
 		PriceBuy float64 `json:"PriceBuy"`
 	} `json:"Expenses"`
