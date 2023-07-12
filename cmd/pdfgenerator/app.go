@@ -29,8 +29,11 @@ func main() {
 }
 
 func start(router *httprouter.Router) {
+	const (
+		port = ":1234"
+	)
 	log.Println("Start application")
-	listener, err := net.Listen("tcp", ":1234")
+	listener, err := net.Listen("tcp", port)
 	if err != nil {
 		panic(err)
 	}
@@ -41,6 +44,6 @@ func start(router *httprouter.Router) {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	log.Println("Server is listening port 1234")
+	log.Println("Server is listening port " + port)
 	log.Fatal(server.Serve(listener))
 }
