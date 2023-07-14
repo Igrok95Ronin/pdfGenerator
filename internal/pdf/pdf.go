@@ -88,6 +88,7 @@ func (p *pdfDocument) AddTextRight(text string) {
 func (p *pdfDocument) AddCheckBox(width float64, text string) {
 	p.pdf.SetFont("Arial", "", 10)
 	_, lineHt := p.pdf.GetFontSize()
+
 	p.pdf.CellFormat(width, lineHt*2, text, "0", 0, "C", false, 0, "")
 }
 
@@ -197,12 +198,37 @@ func Pdf(url string) {
 	pdf.LineHt(7)
 
 	//*CheckBox
-	pdf.AddCheckBox(38, "[✓] Objednavka")
-	pdf.AddCheckBox(25, "[ ] Nabidka")
-	pdf.AddCheckBox(37, "[ ] Konzultace")
-	pdf.AddCheckBox(37, "[✓] Nalehavost")
-	pdf.AddCheckBox(25, "[ ] Montaz")
-	pdf.AddCheckBox(31.6, "[✓] Pojisteni")
+
+	if jsn.CheckBox1 == "yes" {
+		pdf.AddCheckBox(38, "[✓] Objednavka")
+	} else {
+		pdf.AddCheckBox(38, "[ ] Objednavka")
+	}
+	if jsn.CheckBox2 == "yes" {
+		pdf.AddCheckBox(25, "[✓] Nabidka")
+	} else {
+		pdf.AddCheckBox(25, "[ ] Nabidka")
+	}
+	if jsn.CheckBox3 == "yes" {
+		pdf.AddCheckBox(37, "[✓] Konzultace")
+	} else {
+		pdf.AddCheckBox(37, "[ ] Konzultace")
+	}
+	if jsn.CheckBox4 == "yes" {
+		pdf.AddCheckBox(37, "[✓] Nalehavost")
+	} else {
+		pdf.AddCheckBox(37, "[ ] Nalehavost")
+	}
+	if jsn.CheckBox5 == "yes" {
+		pdf.AddCheckBox(25, "[✓] Montaz")
+	} else {
+		pdf.AddCheckBox(25, "[ ] Montaz")
+	}
+	if jsn.CheckBox6 == "yes" {
+		pdf.AddCheckBox(31.6, "[✓] Pojisteni")
+	} else {
+		pdf.AddCheckBox(31.6, "[ ] Pojisteni")
+	}
 	pdf.LineHt(3)
 
 	//*Таблица
