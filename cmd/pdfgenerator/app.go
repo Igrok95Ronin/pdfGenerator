@@ -12,18 +12,19 @@ import (
 
 func Pdf(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
-	scheme := "https://app.o95.info"
-	url := fmt.Sprintf("%s%s", scheme, r.URL)
+	queryParam := r.URL.Query().Get("url")
 
-	fmt.Fprintln(w, url)
-	pdf.Pdf(url)
+	fmt.Println(queryParam)
+
+	pdf.Pdf(queryParam, w)
+
 }
 
 // test
 func main() {
 	log.Println("Create router")
 	router := httprouter.New()
-	router.GET("/receipt", Pdf)
+	router.GET("/pdf", Pdf)
 
 	start(router)
 }
