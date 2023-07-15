@@ -6,6 +6,7 @@ import (
 	"log"
 	"pdgGenerator/internal/json"
 	"strconv"
+	"unicode/utf8"
 )
 
 var _ PdfDocument = &pdfDocument{}
@@ -36,8 +37,8 @@ type PdfDocument interface {
 	AddText(string)
 	AddTextRight(string)
 	AddCheckBox(float64, string)
-	TableHeader(string, string)
-	TableBody(string, string)
+	TableHeader(float64, float64, string, string)
+	TableBody(float64, float64, string, string)
 	BottomBlock(float64, string, string)
 	Footer(string)
 }
@@ -87,11 +88,12 @@ func (p *pdfDocument) AddTextRight(text string) {
 func (p *pdfDocument) AddCheckBox(width float64, text string) {
 	p.pdf.SetFont("Arial", "", 10)
 	_, lineHt := p.pdf.GetFontSize()
+
 	p.pdf.CellFormat(width, lineHt*2, text, "0", 0, "C", false, 0, "")
 }
 
 // заголовок таблиц
-func (p *pdfDocument) TableHeader(text, alignStr string) {
+func (p *pdfDocument) TableHeader(width, height float64, text, alignStr string) {
 	p.pdf.SetFillColor(52, 116, 178)  // Установка цвета заливки для заголовка
 	p.pdf.SetTextColor(255, 255, 255) // Устанавливает цвет текста
 	p.pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
@@ -99,29 +101,25 @@ func (p *pdfDocument) TableHeader(text, alignStr string) {
 	p.pdf.AddUTF8Font("DejaVuSans", "B", "../../ui/static/fonts/DejaVuSans-Bold.ttf")
 	p.pdf.SetFont("DejaVuSans", "B", 10) //шрифт,жирность,размер
 
-	const (
-		WidthTable  = 48.5
-		HeightTable = 14
-	)
 	x, y := p.pdf.GetXY() // получение текущих координат X и Y
 
 	if text == " Jednotková \n cena bez DPH " {
-		p.pdf.MultiCell(WidthTable, 7, text, "1", alignStr, true)
+		p.pdf.MultiCell(width, 7, text, "1", alignStr, true)
 	} else {
-		p.pdf.MultiCell(WidthTable, HeightTable, text, "1", alignStr, true)
+		p.pdf.MultiCell(width, height, text, "1", alignStr, true)
 	}
-	p.pdf.SetXY(x+WidthTable, y) // установка новых координат X и Y, увеличиваем X
+	p.pdf.SetXY(x+width, y) // установка новых координат X и Y, увеличиваем X
 }
 
 // тело таблицы
-func (p *pdfDocument) TableBody(text, alignStr string) {
-	const (
-		WidthTable  = 48.5
-		HeightTable = 14
-	)
+func (p *pdfDocument) TableBody(width, height float64, text, alignStr string) {
+	x, y := p.pdf.GetXY() // получение текущих координат X и Y
+
 	p.pdf.SetFillColor(255, 255, 255) // Установка цвета заливки для заголовка
 	p.pdf.SetTextColor(0, 0, 0)       // Устанавливает цвет текста
-	p.pdf.CellFormat(WidthTable, HeightTable, text, "1", 0, alignStr, true, 0, "")
+	p.pdf.MultiCell(width, height, text, "1", alignStr, true)
+
+	p.pdf.SetXY(x+width, y) // установка новых координат X и Y, увеличиваем X
 }
 
 // Нижний блок
@@ -200,33 +198,60 @@ func Pdf(url string) {
 	pdf.LineHt(7)
 
 	//*CheckBox
-	pdf.AddCheckBox(38, "[✓] Objednavka")
-	pdf.AddCheckBox(25, "[ ] Nabidka")
-	pdf.AddCheckBox(37, "[ ] Konzultace")
-	pdf.AddCheckBox(37, "[✓] Nalehavost")
-	pdf.AddCheckBox(25, "[ ] Montaz")
-	pdf.AddCheckBox(31.6, "[✓] Pojisteni")
+
+	if jsn.CheckBox1 == "yes" {
+		pdf.AddCheckBox(38, "[✓] Objednavka")
+	} else {
+		pdf.AddCheckBox(38, "[ ] Objednavka")
+	}
+	if jsn.CheckBox2 == "yes" {
+		pdf.AddCheckBox(25, "[✓] Nabidka")
+	} else {
+		pdf.AddCheckBox(25, "[ ] Nabidka")
+	}
+	if jsn.CheckBox3 == "yes" {
+		pdf.AddCheckBox(37, "[✓] Konzultace")
+	} else {
+		pdf.AddCheckBox(37, "[ ] Konzultace")
+	}
+	if jsn.CheckBox4 == "yes" {
+		pdf.AddCheckBox(37, "[✓] Nalehavost")
+	} else {
+		pdf.AddCheckBox(37, "[ ] Nalehavost")
+	}
+	if jsn.CheckBox5 == "yes" {
+		pdf.AddCheckBox(25, "[✓] Montaz")
+	} else {
+		pdf.AddCheckBox(25, "[ ] Montaz")
+	}
+	if jsn.CheckBox6 == "yes" {
+		pdf.AddCheckBox(31.6, "[✓] Pojisteni")
+	} else {
+		pdf.AddCheckBox(31.6, "[ ] Pojisteni")
+	}
 	pdf.LineHt(3)
 
 	//*Таблица
 	//-Header
-	pdf.TableHeader(" Popis/Výkon ", "L")
-	pdf.TableHeader(" Množství ", "C")
-	pdf.TableHeader(" Cena za kus ", "C")
-	pdf.TableHeader(" Jednotková \n cena bez DPH ", "C")
+	pdf.TableHeader(56.0, 14, " Popis/Výkon ", "L")
+	pdf.TableHeader(46.0, 14, " Množství ", "C")
+	pdf.TableHeader(46.0, 14, " Cena za kus ", "C")
+	pdf.TableHeader(46.0, 14, " Jednotková \n cena bez DPH ", "C")
 	pdf.LineHt(4)
 
 	//-Body
-	pdf.TableBody(" "+jsn.Expenses[0].Name, "L")
-	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[0].Amount, 'f', -1, 64), "C")
-	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[0].Price, 'f', -1, 64), "C")
-	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[0].PriceBuy, 'f', -1, 64), "C")
-	pdf.LineHt(4)
-	pdf.TableBody(" "+jsn.Expenses[1].Name, "L")
-	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[1].Amount, 'f', -1, 64), "C")
-	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[1].Price, 'f', -1, 64), "C")
-	pdf.TableBody(strconv.FormatFloat(jsn.Expenses[1].PriceBuy, 'f', -1, 64), "C")
-	pdf.LineHt(6)
+	for i := 0; i < len(jsn.Expenses); i++ {
+		if utf8.RuneCountInString(jsn.Expenses[i].Name) > 30 {
+			pdf.TableBody(56.0, 7, jsn.Expenses[i].Name, "L")
+		} else {
+			pdf.TableBody(56.0, 14, jsn.Expenses[i].Name, "L")
+		}
+		pdf.TableBody(46.0, 14, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
+		pdf.TableBody(46.0, 14, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
+		pdf.TableBody(46.0, 14, strconv.FormatFloat(jsn.Expenses[i].PriceBuy, 'f', -1, 64), "C")
+		pdf.LineHt(4)
+	}
+	pdf.LineHt(2)
 
 	//*Нижний блок
 	//-line 1
