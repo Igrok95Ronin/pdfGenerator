@@ -371,4 +371,5 @@ func Pdf(url string, w http.ResponseWriter) {
 	if err != nil {
 		log.Println(err)
 	}
+
 }
