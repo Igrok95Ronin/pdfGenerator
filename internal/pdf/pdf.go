@@ -42,6 +42,7 @@ type PdfDocument interface {
 	BottomBlock(float64, string, string)
 	Footer(string)
 	SecondLeaf(string)
+	Signature(string, string, string, float64, float64, float64, float64)
 }
 
 func newPdfDocument() PdfDocument {
@@ -148,6 +149,15 @@ func (p *pdfDocument) Footer(text string) {
 func (p *pdfDocument) SecondLeaf(text string) {
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.CellFormat(190, lineHt+20, text, "0", 0, "L", false, 0, "")
+}
+
+// Подпись
+func (p *pdfDocument) Signature(text, alignStr, url string, x, y, w, h float64) {
+	_, lineHt := p.pdf.GetFontSize()
+	p.pdf.CellFormat(95, lineHt+20, text, "0", 0, alignStr, false, 0, "")
+	// ImageOptions(src string, x, y, w, h float64, flow bool, options ImageOptions, link int, linkStr string)
+	p.pdf.ImageOptions(url, x, y, w, h, false, gofpdf.ImageOptions{ImageType: "jpeg", ReadDpi: true}, 0, "")
+
 }
 
 // Создание pdf
@@ -328,7 +338,13 @@ func Pdf(url string) {
 	pdf.SecondLeaf("malém poškození a Akcepeji. 2e v pripade malé nedbalosti je ručené vyloučené.")
 	pdf.LineHt(2)
 	pdf.SecondLeaf("Provedené fakturované položky plati jako dohodmné. Tato ustanovení bylo přečteno a")
-	pdf.LineHt(2)
+	pdf.LineHt(30)
+
+	//Подпись
+	date := jsn.StartedAt
+	dateString := date.Format("02 Jan 2006")
+	pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/205887_fb7deaec-869a-4af0-9c52-ba55bc12bef5.jpeg", 10, 230, 70, 0)
+	pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/205887_9c7812b1-e5c8-4e5e-9a8a-4d28798171d1.jpeg", 125, 230, 70, 0)
 
 	//*Создаем pdf файл
 	err := pdf.OutputFileAndClose()
