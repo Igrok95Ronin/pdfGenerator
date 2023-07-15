@@ -282,7 +282,7 @@ func Pdf(url string, w http.ResponseWriter) {
 	pdf.BottomBlock(width1, "Částka obdržena:", "L")
 	pdf.BottomBlock(width1, "", "L")
 	pdf.BottomBlock(width2, "Mezisoučet:", "R")
-	pdf.BottomBlock(width3, "3800.00", "R")
+	pdf.BottomBlock(width3, jsn.Amount, "R")
 	pdf.LineHt(2)
 
 	//-line 2
@@ -296,7 +296,7 @@ func Pdf(url string, w http.ResponseWriter) {
 	pdf.BottomBlock(width1, "Kartou:", "L")
 	pdf.BottomBlock(width1, jsn.AmountATM, "L")
 	pdf.BottomBlock(width2, "DPH 21 %:", "R")
-	pdf.BottomBlock(width3, "798.00", "R")
+	pdf.BottomBlock(width3, jsn.AmountTax, "R")
 	pdf.LineHt(2)
 
 	//-line 4
@@ -310,7 +310,7 @@ func Pdf(url string, w http.ResponseWriter) {
 	pdf.BottomBlock(width1, "Dluh:", "L")
 	pdf.BottomBlock(width1, jsn.AmountCredit, "L")
 	pdf.BottomBlock(width2, "Celková částka:", "R")
-	pdf.BottomBlock(width3, "4598.00", "R")
+	pdf.BottomBlock(width3, jsn.AmountTotal, "R")
 
 	//*Footer
 	pdf.Footer("Rychly servis bohemia 24/7 s.r.o, IČO 17973538, Braunerova 563/7, Libeň, 180 00 Praha 8\nBankovní účet: 5040636073/0800")
