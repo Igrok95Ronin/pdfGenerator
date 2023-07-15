@@ -41,6 +41,7 @@ type PdfDocument interface {
 	TableBody(float64, float64, string, string)
 	BottomBlock(float64, string, string)
 	Footer(string)
+	SecondLeaf(string)
 }
 
 func newPdfDocument() PdfDocument {
@@ -143,6 +144,12 @@ func (p *pdfDocument) Footer(text string) {
 
 }
 
+// Второй лист
+func (p *pdfDocument) SecondLeaf(text string) {
+	_, lineHt := p.pdf.GetFontSize()
+	p.pdf.CellFormat(190, lineHt+20, text, "0", 0, "L", false, 0, "")
+}
+
 // Создание pdf
 func (p *pdfDocument) OutputFileAndClose() error {
 	return p.pdf.OutputFileAndClose(p.outputFileAndClose)
@@ -200,96 +207,128 @@ func Pdf(url string) {
 	//*CheckBox
 
 	if jsn.CheckBox1 == "yes" {
-		pdf.AddCheckBox(38, "[✓] Objednavka")
+		pdf.AddCheckBox(37.5, "[✓] Objednavka")
 	} else {
-		pdf.AddCheckBox(38, "[ ] Objednavka")
+		pdf.AddCheckBox(37.5, "[ ] Objednavka")
 	}
 	if jsn.CheckBox2 == "yes" {
-		pdf.AddCheckBox(25, "[✓] Nabidka")
+		pdf.AddCheckBox(24.5, "[✓] Nabidka")
 	} else {
-		pdf.AddCheckBox(25, "[ ] Nabidka")
+		pdf.AddCheckBox(24.5, "[ ] Nabidka")
 	}
 	if jsn.CheckBox3 == "yes" {
-		pdf.AddCheckBox(37, "[✓] Konzultace")
+		pdf.AddCheckBox(36.5, "[✓] Konzultace")
 	} else {
-		pdf.AddCheckBox(37, "[ ] Konzultace")
+		pdf.AddCheckBox(36.5, "[ ] Konzultace")
 	}
 	if jsn.CheckBox4 == "yes" {
-		pdf.AddCheckBox(37, "[✓] Nalehavost")
+		pdf.AddCheckBox(36.5, "[✓] Nalehavost")
 	} else {
-		pdf.AddCheckBox(37, "[ ] Nalehavost")
+		pdf.AddCheckBox(36.5, "[ ] Nalehavost")
 	}
 	if jsn.CheckBox5 == "yes" {
-		pdf.AddCheckBox(25, "[✓] Montaz")
+		pdf.AddCheckBox(24.5, "[✓] Montaz")
 	} else {
-		pdf.AddCheckBox(25, "[ ] Montaz")
+		pdf.AddCheckBox(24.5, "[ ] Montaz")
 	}
 	if jsn.CheckBox6 == "yes" {
-		pdf.AddCheckBox(31.6, "[✓] Pojisteni")
+		pdf.AddCheckBox(30.5, "[✓] Pojisteni")
 	} else {
-		pdf.AddCheckBox(31.6, "[ ] Pojisteni")
+		pdf.AddCheckBox(30.5, "[ ] Pojisteni")
 	}
 	pdf.LineHt(3)
 
 	//*Таблица
 	//-Header
-	pdf.TableHeader(56.0, 14, " Popis/Výkon ", "L")
-	pdf.TableHeader(46.0, 14, " Množství ", "C")
-	pdf.TableHeader(46.0, 14, " Cena za kus ", "C")
-	pdf.TableHeader(46.0, 14, " Jednotková \n cena bez DPH ", "C")
+	pdf.TableHeader(55.0, 14, " Popis/Výkon ", "L")
+	pdf.TableHeader(45.0, 14, " Množství ", "C")
+	pdf.TableHeader(45.0, 14, " Cena za kus ", "C")
+	pdf.TableHeader(45.0, 14, " Jednotková \n cena bez DPH ", "C")
 	pdf.LineHt(4)
 
 	//-Body
 	for i := 0; i < len(jsn.Expenses); i++ {
 		if utf8.RuneCountInString(jsn.Expenses[i].Name) > 30 {
-			pdf.TableBody(56.0, 7, jsn.Expenses[i].Name, "L")
+			pdf.TableBody(55.0, 7, jsn.Expenses[i].Name, "L")
 		} else {
-			pdf.TableBody(56.0, 14, jsn.Expenses[i].Name, "L")
+			pdf.TableBody(55.0, 14, jsn.Expenses[i].Name, "L")
 		}
-		pdf.TableBody(46.0, 14, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
-		pdf.TableBody(46.0, 14, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
-		pdf.TableBody(46.0, 14, strconv.FormatFloat(jsn.Expenses[i].PriceBuy, 'f', -1, 64), "C")
+		pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
+		pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
+		pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].PriceBuy, 'f', -1, 64), "C")
 		pdf.LineHt(4)
 	}
 	pdf.LineHt(2)
 
 	//*Нижний блок
 	//-line 1
-	pdf.BottomBlock(48.5, "Částka obdržena:", "L")
-	pdf.BottomBlock(48.5, "", "L")
-	pdf.BottomBlock(69, "Mezisoučet:", "R")
-	pdf.BottomBlock(28, "3800.00", "R")
+	const (
+		width1 = 47.5
+		width2 = 68
+		width3 = 27
+	)
+	pdf.BottomBlock(width1, "Částka obdržena:", "L")
+	pdf.BottomBlock(width1, "", "L")
+	pdf.BottomBlock(width2, "Mezisoučet:", "R")
+	pdf.BottomBlock(width3, "3800.00", "R")
 	pdf.LineHt(2)
 
 	//-line 2
-	pdf.BottomBlock(48.5, "Hotově:", "L")
-	pdf.BottomBlock(48.5, jsn.AmountCash, "L")
-	pdf.BottomBlock(69, "", "R")
-	pdf.BottomBlock(28, "", "R")
+	pdf.BottomBlock(width1, "Hotově:", "L")
+	pdf.BottomBlock(width1, jsn.AmountCash, "L")
+	pdf.BottomBlock(width2, "", "R")
+	pdf.BottomBlock(width3, "", "R")
 	pdf.LineHt(2)
 
 	//-line 3
-	pdf.BottomBlock(48.5, "Kartou:", "L")
-	pdf.BottomBlock(48.5, jsn.AmountATM, "L")
-	pdf.BottomBlock(69, "DPH 21 %:", "R")
-	pdf.BottomBlock(28, "798.00", "R")
+	pdf.BottomBlock(width1, "Kartou:", "L")
+	pdf.BottomBlock(width1, jsn.AmountATM, "L")
+	pdf.BottomBlock(width2, "DPH 21 %:", "R")
+	pdf.BottomBlock(width3, "798.00", "R")
 	pdf.LineHt(2)
 
 	//-line 4
-	pdf.BottomBlock(48.5, "Převod:", "L")
-	pdf.BottomBlock(48.5, jsn.AmountOnline, "L")
-	pdf.BottomBlock(69, "", "R")
-	pdf.BottomBlock(28, "", "R")
+	pdf.BottomBlock(width1, "Převod:", "L")
+	pdf.BottomBlock(width1, jsn.AmountOnline, "L")
+	pdf.BottomBlock(width2, "", "R")
+	pdf.BottomBlock(width3, "", "R")
 	pdf.LineHt(2)
 
 	//-line 5
-	pdf.BottomBlock(48.5, "Dluh:", "L")
-	pdf.BottomBlock(48.5, jsn.AmountCredit, "L")
-	pdf.BottomBlock(69, "Celková částka:", "R")
-	pdf.BottomBlock(28, "4598.00", "R")
+	pdf.BottomBlock(width1, "Dluh:", "L")
+	pdf.BottomBlock(width1, jsn.AmountCredit, "L")
+	pdf.BottomBlock(width2, "Celková částka:", "R")
+	pdf.BottomBlock(width3, "4598.00", "R")
 
 	//*Footer
 	pdf.Footer("Rychly servis bohemia 24/7 s.r.o, IČO 17973538, Braunerova 563/7, Libeň, 180 00 Praha 8\nBankovní účet: 5040636073/0800")
+
+	//*Второй лист
+	pdf.SecondLeaf("Přejímací protokol:")
+	pdf.LineHt(2)
+	pdf.SecondLeaf("[✓]  Práce byla převzata bez závad/Shora uvedené zboží bylo na přání namontováno.")
+	pdf.LineHt(2)
+	pdf.SecondLeaf("[✓]  Faktura je akceptována ohledně ceny a obsahu a položky byly srozumitelně vysvětleny")
+	pdf.LineHt(2)
+	pdf.SecondLeaf("[✓]  Zaplatim okamžitě bez srážek a nemám žádné")
+	pdf.LineHt(10)
+
+	//*Второй лист
+	//-Второй блок
+	pdf.SecondLeaf("Splatné okamžitě bez srážky")
+	pdf.LineHt(2)
+	pdf.SecondLeaf("Zadání objednávky/potvrzeni/Povolení")
+	pdf.LineHt(2)
+	pdf.SecondLeaf("Jsem oprávnen nechat vykonat non zadané práce")
+	pdf.LineHt(2)
+	pdf.SecondLeaf("Celková účtovaná částka je podle domluvy splatná v hotovosti nebo")
+	pdf.LineHt(2)
+	pdf.SecondLeaf("platební kartou okamžité na mistě bez srážek. Byl jsem informován o možném")
+	pdf.LineHt(2)
+	pdf.SecondLeaf("malém poškození a Akcepeji. 2e v pripade malé nedbalosti je ručené vyloučené.")
+	pdf.LineHt(2)
+	pdf.SecondLeaf("Provedené fakturované položky plati jako dohodmné. Tato ustanovení bylo přečteno a")
+	pdf.LineHt(2)
 
 	//*Создаем pdf файл
 	err := pdf.OutputFileAndClose()
