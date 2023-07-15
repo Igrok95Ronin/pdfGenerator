@@ -76,9 +76,7 @@ func (d *DataJsonStruct) Parse(url string) {
 	// Декодирование JSON из тела ответа в нашу структуру
 	err = json.Unmarshal(body, d)
 	if err != nil {
-		log.Fatalf("Ошибка при разборе JSON: %s", err)
+		log.Printf("Ошибка при разборе JSON: %s", err)
 	}
 
-	// Вывод декодированных данных
-	//fmt.Printf("Decoded data: %+v\n", d)
 }

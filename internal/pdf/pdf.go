@@ -1,9 +1,11 @@
 package pdf
 
 import (
-	"fmt"
 	"github.com/jung-kurt/gofpdf"
+	"io"
 	"log"
+	"net/http"
+	"os"
 	"pdgGenerator/internal/json"
 	"strconv"
 	"unicode/utf8"
@@ -184,11 +186,11 @@ func (p *pdfDocument) LineHt(ht float64) {
 	p.pdf.Ln(lineHt * ht) //перенос строки
 }
 
-func Pdf(url string) {
+func Pdf(url string, w http.ResponseWriter) {
 
 	jsn := &json.DataJsonStruct{}
 	jsn.Parse(url)
-	fmt.Println(jsn.Amount)
+	//fmt.Println(jsn.Amount)
 
 	//PDF
 	pdf := newPdfDocument()
@@ -350,5 +352,23 @@ func Pdf(url string) {
 	err := pdf.OutputFileAndClose()
 	if err != nil {
 		log.Fatalf("Не удалось вывести файл и закрыть PDF-документ: %v", err)
+	}
+
+	// Открываем файл PDF
+	pdfFile, err := os.Open("../../yourContract.pdf")
+	if err != nil {
+		http.Error(w, "Не удалось открыть PDF", http.StatusInternalServerError)
+		return
+	}
+	defer pdfFile.Close()
+
+	// Устанавливаем заголовки для отображения PDF в браузере
+	w.Header().Set("Content-Type", "application/pdf")
+	w.Header().Set("Content-Disposition", "inline; filename=yourContract.pdf")
+
+	// Пишем содержимое файла в ответ
+	_, err = io.Copy(w, pdfFile)
+	if err != nil {
+		log.Println(err)
 	}
 }
