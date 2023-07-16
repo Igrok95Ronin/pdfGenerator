@@ -284,14 +284,14 @@ func Pdf(url string, w http.ResponseWriter) {
 
 	//-Body
 	for i := 0; i < len(jsn.Expenses); i++ {
-		if utf8.RuneCountInString(jsn.Expenses[i].Name) > 30 {
+		if utf8.RuneCountInString(jsn.Expenses[i].Name) > 25 {
 			pdf.TableBody(55.0, 7, jsn.Expenses[i].Name, "L")
 		} else {
 			pdf.TableBody(55.0, 14, jsn.Expenses[i].Name, "L")
 		}
 		pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
 		pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
-		pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].PriceBuy, 'f', -1, 64), "C")
+		pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].PriceBuy*jsn.Expenses[i].Amount, 'f', -1, 64), "C")
 		pdf.LineHt(4)
 	}
 	pdf.LineHt(2)
