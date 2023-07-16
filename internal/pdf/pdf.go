@@ -1,6 +1,7 @@
 package pdf
 
 import (
+	"fmt"
 	"github.com/jung-kurt/gofpdf"
 	"io"
 	"log"
@@ -159,22 +160,26 @@ func (p *pdfDocument) Signature(text, alignStr, url string, x, y, w, h float64, 
 	p.pdf.CellFormat(95, lineHt+20, text, "0", 0, alignStr, false, 0, "")
 
 	//e
-	resp, err := http.Get("https://app.o95.info/" + webPath)
-	if err != nil {
-		log.Println(err)
-	}
-	defer resp.Body.Close()
+	fmt.Println(signatureName)
+	if signatureName == "firstSignature" || signatureName == "secondSignature" {
+		resp, err := http.Get("https://app.o95.info/" + webPath)
+		if err != nil {
+			log.Println(err)
+		}
+		defer resp.Body.Close()
 
-	out, err := os.Create("../../ui/static/img/" + signatureName + ".jpeg")
-	if err != nil {
-		log.Println(err)
-	}
-	defer out.Close()
+		out, err := os.Create("../../ui/static/img/" + signatureName + ".jpeg")
+		if err != nil {
+			log.Println(err)
+		}
+		defer out.Close()
 
-	_, err = io.Copy(out, resp.Body)
-	if err != nil {
-		log.Println(err)
+		_, err = io.Copy(out, resp.Body)
+		if err != nil {
+			log.Println(err)
+		}
 	}
+
 	//e
 	// ImageOptions(src string, x, y, w, h float64, flow bool, options ImageOptions, link int, linkStr string)
 	p.pdf.ImageOptions(url, x, y, w, h, false, gofpdf.ImageOptions{ImageType: "jpeg", ReadDpi: true}, 0, "")
@@ -364,8 +369,17 @@ func Pdf(url string, w http.ResponseWriter) {
 	//Подпись
 	date := jsn.StartedAt
 	dateString := date.Format("02 Jan 2006")
-	pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/1.jpeg", 10, 230, 70, 0, jsn.SignatureURL, "1")
-	pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/2.jpeg", 125, 230, 70, 0, jsn.SignatureEndURL, "2")
+
+	if jsn.SignatureURL != "" {
+		pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/firstSignature.jpeg", 10, 230, 70, 0, jsn.SignatureURL, "firstSignature")
+	} else {
+		pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/defaultSignature.jpeg", 20, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
+	}
+	if jsn.SignatureEndURL != "" {
+		pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/secondSignature.jpeg", 125, 230, 70, 0, jsn.SignatureEndURL, "secondSignature")
+	} else {
+		pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/defaultSignature.jpeg", 135, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
+	}
 
 	//*Создаем pdf файл
 	err := pdf.OutputFileAndClose()
