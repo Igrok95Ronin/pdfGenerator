@@ -423,7 +423,7 @@ func Pdf(url string, w http.ResponseWriter) {
 	} else if jsn.Country == "at" {
 
 		//*Заголовок документа
-		pdf.Header("AT")
+		//pdf.Header("AT")
 		pdf.LineHt(2)
 
 		//*Верхний блок
