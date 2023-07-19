@@ -224,7 +224,7 @@ func (p *pdfDocument) LineHt(ht float64) {
 	p.pdf.Ln(lineHt * ht) //перенос строки
 }
 
-func Pdf(url string, w http.ResponseWriter) {
+func GeneratePdf(url string, w http.ResponseWriter) {
 
 	jsn := &json.DataJsonStruct{}
 	jsn.Parse(url)
@@ -423,7 +423,7 @@ func Pdf(url string, w http.ResponseWriter) {
 	} else if jsn.Country == "at" {
 
 		//*Заголовок документа
-		pdf.Header("AT")
+		//pdf.Header("AT")
 		pdf.LineHt(2)
 
 		//*Верхний блок
