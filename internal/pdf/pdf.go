@@ -40,6 +40,8 @@ type PdfDocument interface {
 	AddText(string)
 	AddTextRight(string)
 	AddCheckBox(float64, string)
+	CheckMark(float64, float64, float64)
+	CheckMarkEmpty(float64, float64, float64)
 	TableHeader(float64, float64, string, string)
 	TableBody(float64, float64, string, string)
 	BottomBlock(float64, string, string)
@@ -73,7 +75,7 @@ func (p *pdfDocument) Header(text string) {
 
 // Верхний блок
 func (p *pdfDocument) AddText(text string) {
-	p.pdf.SetFont("Arial", "", 12) //шрифт,жирность,размер
+	p.pdf.SetFont("Arial", "", 10) //шрифт,жирность,размер
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.Ln(lineHt * 1.5)
 
@@ -83,7 +85,7 @@ func (p *pdfDocument) AddText(text string) {
 // Верхний блок,правая строка
 func (p *pdfDocument) AddTextRight(text string) {
 	p.pdf.AddUTF8Font("DejaVuSans", "B", "../../ui/static/fonts/DejaVuSans-Bold.ttf")
-	p.pdf.SetFont("DejaVuSans", "B", 12)
+	p.pdf.SetFont("DejaVuSans", "B", 10)
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.SetTextColor(52, 116, 178) //цвет текста
 
@@ -99,6 +101,21 @@ func (p *pdfDocument) AddCheckBox(width float64, text string) {
 	p.pdf.CellFormat(width, lineHt*2, text, "0", 0, "C", false, 0, "")
 }
 
+// check mark
+func (p *pdfDocument) CheckMark(x, y, size float64) {
+	// Рисование квадрата (чек-бокса)
+	p.pdf.Rect(x, y, size, size, "D") // Функция Rect рисует прямоугольник. "D" означает, что прямоугольник только рисуется ("draw"), а не заливается цветом.
+	// Добавление галочки внутри квадрата (чек-бокса)
+	checkMarkSize := size / 2.0                                                                  // Размер галочки будет в два раза меньше размера чек-бокса
+	p.pdf.Line(x+checkMarkSize/3.5, y+checkMarkSize, x+checkMarkSize/1.5, y+checkMarkSize*1.5)   // Первая часть галочки
+	p.pdf.Line(x+checkMarkSize/1.5, y+checkMarkSize*1.5, x+checkMarkSize*1.7, y+checkMarkSize/2) // Вторая часть галочки
+
+}
+func (p *pdfDocument) CheckMarkEmpty(x, y, size float64) {
+	// Рисование квадрата (чек-бокса)
+	p.pdf.Rect(x, y, size, size, "D") // Функция Rect рисует прямоугольник. "D" означает, что прямоугольник только рисуется ("draw"), а не заливается цветом.
+}
+
 // заголовок таблиц
 func (p *pdfDocument) TableHeader(width, height float64, text, alignStr string) {
 	p.pdf.SetFillColor(52, 116, 178)  // Установка цвета заливки для заголовка
@@ -106,7 +123,7 @@ func (p *pdfDocument) TableHeader(width, height float64, text, alignStr string) 
 	p.pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
 
 	p.pdf.AddUTF8Font("DejaVuSans", "B", "../../ui/static/fonts/DejaVuSans-Bold.ttf")
-	p.pdf.SetFont("DejaVuSans", "B", 10) //шрифт,жирность,размер
+	p.pdf.SetFont("DejaVuSans", "B", 9) //шрифт,жирность,размер
 
 	x, y := p.pdf.GetXY() // получение текущих координат X и Y
 
@@ -257,45 +274,60 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		pdf.LineHt(7)
 
 		//*CheckBox
-
+		const (
+			Y    = 59
+			Size = 4
+		)
 		if jsn.CheckBox1 == "yes" {
-			pdf.AddCheckBox(37.5, "[✓] Objednavka")
+			pdf.CheckMark(13, Y, Size)
+			pdf.AddCheckBox(37.5, "Objednavka")
 		} else {
-			pdf.AddCheckBox(37.5, "[ ] Objednavka")
+			pdf.CheckMarkEmpty(13, Y, Size)
+			pdf.AddCheckBox(37.5, "Objednavka")
 		}
 		if jsn.CheckBox2 == "yes" {
-			pdf.AddCheckBox(24.5, "[✓] Nabidka")
+			pdf.CheckMark(47.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Nabidka")
 		} else {
-			pdf.AddCheckBox(24.5, "[ ] Nabidka")
+			pdf.CheckMarkEmpty(47.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Nabidka")
 		}
 		if jsn.CheckBox3 == "yes" {
-			pdf.AddCheckBox(36.5, "[✓] Konzultace")
+			pdf.CheckMark(75.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Konzultace")
 		} else {
-			pdf.AddCheckBox(36.5, "[ ] Konzultace")
+			pdf.CheckMarkEmpty(75.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Konzultace")
 		}
 		if jsn.CheckBox4 == "yes" {
-			pdf.AddCheckBox(36.5, "[✓] Nalehavost")
+			pdf.CheckMark(111.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Nalehavost")
 		} else {
-			pdf.AddCheckBox(36.5, "[ ] Nalehavost")
+			pdf.CheckMarkEmpty(111.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Nalehavost")
 		}
 		if jsn.CheckBox5 == "yes" {
-			pdf.AddCheckBox(24.5, "[✓] Montaz")
+			pdf.CheckMark(145.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Montaz")
 		} else {
-			pdf.AddCheckBox(24.5, "[ ] Montaz")
+			pdf.CheckMarkEmpty(145.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Montaz")
 		}
 		if jsn.CheckBox6 == "yes" {
-			pdf.AddCheckBox(30.5, "[✓] Pojisteni")
+			pdf.CheckMark(172.5, Y, Size)
+			pdf.AddCheckBox(30.5, "Pojisteni")
 		} else {
-			pdf.AddCheckBox(30.5, "[ ] Pojisteni")
+			pdf.CheckMarkEmpty(172.5, Y, Size)
+			pdf.AddCheckBox(30.5, "Pojisteni")
 		}
-		pdf.LineHt(3)
+		pdf.LineHt(2.2)
 
 		//*Таблица
 		//-Header
-		pdf.TableHeader(55.0, 14, " Popis/Výkon ", "L")
-		pdf.TableHeader(45.0, 14, " Množství ", "C")
-		pdf.TableHeader(45.0, 14, " Cena za kus ", "C")
-		pdf.TableHeader(45.0, 14, " Jednotková \n cena bez DPH ", "C")
+		pdf.TableHeader(70.0, 14, " Popis/Výkon ", "L")
+		pdf.TableHeader(30.0, 14, " Množství ", "C")
+		pdf.TableHeader(30.0, 14, " Cena za kus ", "C")
+		pdf.TableHeader(60.0, 14, " Jednotková cena bez DPH ", "C")
 		pdf.LineHt(4)
 
 		//-Body
