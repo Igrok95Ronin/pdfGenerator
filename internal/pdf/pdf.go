@@ -485,11 +485,8 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 	} else if jsn.Country == "at" {
 
 		//*Заголовок документа
-<<<<<<< HEAD
-		//pdf.Header("AT")
-=======
+
 		pdf.Header("R E C H N U N G")
->>>>>>> test
 		pdf.LineHt(2)
 
 		//*Верхний блок
