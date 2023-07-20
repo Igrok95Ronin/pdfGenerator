@@ -39,6 +39,7 @@ type PdfDocument interface {
 	Header(string)
 	AddText(string)
 	AddTextRight(string)
+	AddTextRightAT(float64, string)
 	AddCheckBox(float64, string)
 	CheckMark(float64, float64, float64)
 	CheckMarkEmpty(float64, float64, float64)
@@ -91,6 +92,15 @@ func (p *pdfDocument) AddTextRight(text string) {
 
 	p.pdf.CellFormat(95, lineHt*3, text, "0", 0, "R", false, 0, "")
 	p.pdf.SetTextColor(0, 0, 0)
+}
+
+// Верхний блок,правая строка AT
+func (p *pdfDocument) AddTextRightAT(width float64, text string) {
+	p.pdf.SetFont("Arial", "", 10) //шрифт,жирность,размер
+	_, lineHt := p.pdf.GetFontSize()
+	//p.pdf.Ln(lineHt * 1.5)
+
+	p.pdf.CellFormat(width, lineHt, text, "0", 0, "R", false, 0, "")
 }
 
 // AddCheckBox
@@ -490,41 +500,66 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 
 		//-Третья строка
 		pdf.AddText(jsn.ZipCode + " " + jsn.City)
+		pdf.AddTextRightAT(95, "G&G Service")
+		pdf.LineHt(1.5)
+		pdf.AddTextRightAT(190, "Rainfelder Hauptstraße 25")
+		pdf.LineHt(1.5)
+		pdf.AddTextRightAT(190, "3162 St. Veit an der Gölsen")
+		pdf.LineHt(1.5)
+		pdf.AddTextRightAT(190, "ATU: in Bearbeitung")
+		pdf.LineHt(1.5)
+		pdf.AddTextRightAT(190, "Email: rechnungen.service@gmail.com")
+
 		pdf.LineHt(7)
 
 		//*CheckBox
-
+		const (
+			Y    = 80.2
+			Size = 4
+		)
 		if jsn.CheckBox1 == "yes" {
-			pdf.AddCheckBox(32.5, "[✓] Bestellung")
+			pdf.CheckMark(13, Y, Size)
+			pdf.AddCheckBox(37.5, "Bestellung")
 		} else {
-			pdf.AddCheckBox(32.5, "[ ] Bestellung")
+			pdf.CheckMarkEmpty(13, Y, Size)
+			pdf.AddCheckBox(37.5, "Bestellung")
 		}
 		if jsn.CheckBox2 == "yes" {
-			pdf.AddCheckBox(23.5, "[✓] Angebot")
+			pdf.CheckMark(47.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Angebot")
 		} else {
-			pdf.AddCheckBox(23.5, "[ ] Angebot")
+			pdf.CheckMarkEmpty(47.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Angebot")
 		}
 		if jsn.CheckBox3 == "yes" {
-			pdf.AddCheckBox(28.5, "[✓] Beratung")
+			pdf.CheckMark(75.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Beratung")
 		} else {
-			pdf.AddCheckBox(28.5, "[ ] Beratung")
+			pdf.CheckMarkEmpty(75.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Beratung")
 		}
 		if jsn.CheckBox4 == "yes" {
-			pdf.AddCheckBox(28.5, "[✓] Notdienst")
+			pdf.CheckMark(111.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Notdienst")
 		} else {
-			pdf.AddCheckBox(28.5, "[ ] Notdienst")
+			pdf.CheckMarkEmpty(111.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Notdienst")
 		}
 		if jsn.CheckBox5 == "yes" {
-			pdf.AddCheckBox(23.5, "[✓] Montage")
+			pdf.CheckMark(145.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Montage")
 		} else {
-			pdf.AddCheckBox(23.5, "[ ] Montage")
+			pdf.CheckMarkEmpty(145.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Montage")
 		}
 		if jsn.CheckBox6 == "yes" {
-			pdf.AddCheckBox(52.5, "[✓] Haushaltsversicherung")
+			pdf.CheckMark(172.5, Y, Size)
+			pdf.AddCheckBox(30.5, "Versicherung")
 		} else {
-			pdf.AddCheckBox(52.5, "[ ] Haushaltsversicherung")
+			pdf.CheckMarkEmpty(172.5, Y, Size)
+			pdf.AddCheckBox(30.5, "Versicherung")
 		}
-		pdf.LineHt(3)
+		pdf.LineHt(2.2)
 
 		//*Таблица
 		//-Header
