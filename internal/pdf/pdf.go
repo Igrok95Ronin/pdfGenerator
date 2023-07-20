@@ -1,7 +1,6 @@
 package pdf
 
 import (
-	"fmt"
 	"github.com/jung-kurt/gofpdf"
 	"io"
 	"log"
@@ -263,7 +262,6 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 	pdf.AddUTF8Font() // Добавляем шрифт, поддерживающий больше символов
 	pdf.SetFont()     // Задаем шрифт, жирность и размер
 
-	fmt.Println(jsn.Country)
 	if jsn.Country == "cz" {
 
 		//*Заголовок документа
