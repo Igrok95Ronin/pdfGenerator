@@ -687,9 +687,19 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		//Третий блок
 		pdf.SecondLeaf("Die Zahlung werde ich jetzt sofort ohne Abzug vornehmen.", 10)
 		pdf.LineHt(2)
-		pdf.SecondLeaf(" [✓] keine Beanstandung der Arbeiten und Funktionen", 10)
+		if jsn.Radio4 == "yes" {
+			pdf.CheckMark(13.0, 98.2, Size)
+		} else {
+			pdf.CheckMarkEmpty(13.0, 98.2, Size)
+		}
+		pdf.SecondLeaf("keine Beanstandung der Arbeiten und Funktionen", 17)
 		pdf.LineHt(2)
-		pdf.SecondLeaf(" [✓] für weitere Dienste ist Kontakt erwünscht", 10)
+		if jsn.Radio5 == "yes" {
+			pdf.CheckMark(13.0, 105.0, Size)
+		} else {
+			pdf.CheckMarkEmpty(13.0, 105.0, Size)
+		}
+		pdf.SecondLeaf("für weitere Dienste ist Kontakt erwünscht", 10)
 		pdf.LineHt(30)
 
 		//Подпись
@@ -699,12 +709,12 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		if jsn.SignatureURL != "" {
 			pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/firstSignature.jpeg", 10, 230, 70, 0, jsn.SignatureURL, "firstSignature")
 		} else {
-			pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/defaultSignature.jpeg", 20, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
+			//pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/defaultSignature.jpeg", 20, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
 		}
 		if jsn.SignatureEndURL != "" {
 			pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/secondSignature.jpeg", 125, 230, 70, 0, jsn.SignatureEndURL, "secondSignature")
 		} else {
-			pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/defaultSignature.jpeg", 135, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
+			//pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/defaultSignature.jpeg", 135, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
 		}
 
 		//*Создаем pdf файл
