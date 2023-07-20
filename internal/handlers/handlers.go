@@ -33,13 +33,8 @@ func Pdf(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	// Печатаем декодированный URL для проверки
-	fmt.Println(decodedQuery)
-
 	// Формируем новый URL, объединяя начало baseURL и декодированный URL
 	fullURL := fmt.Sprintf("%s%s", baseURL, decodedQuery)
-	// Печатаем новый URL для проверки
-	fmt.Println(fullURL)
 
 	// Генерируем PDF, используя новый URL
 	pdf.GeneratePdf(fullURL, w)
