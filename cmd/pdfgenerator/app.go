@@ -20,7 +20,7 @@ func main() {
 
 func start(router *httprouter.Router) {
 	const (
-		port = ":1234"
+		port = ":8080"
 	)
 	log.Println("Start application")
 	listener, err := net.Listen("tcp", port)
