@@ -441,12 +441,12 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		if jsn.SignatureURL != "" {
 			pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/firstSignature.jpeg", 10, 230, 70, 0, jsn.SignatureURL, "firstSignature")
 		} else {
-			pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/defaultSignature.jpeg", 20, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
+			//pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/defaultSignature.jpeg", 20, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
 		}
 		if jsn.SignatureEndURL != "" {
 			pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/secondSignature.jpeg", 125, 230, 70, 0, jsn.SignatureEndURL, "secondSignature")
 		} else {
-			pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/defaultSignature.jpeg", 135, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
+			//pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/defaultSignature.jpeg", 135, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
 		}
 
 		//*Создаем pdf файл
@@ -475,7 +475,7 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 	} else if jsn.Country == "at" {
 
 		//*Заголовок документа
-		//pdf.Header("AT")
+		pdf.Header("R E C H N U N G")
 		pdf.LineHt(2)
 
 		//*Верхний блок
@@ -592,13 +592,13 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		pdf.Footer("Raiffeisen, IBAN: AT42 3200 0000 1363 8788, BIC: RLNWATWWXXX")
 
 		//*Второй лист
-		pdf.SecondLeaf("Auftragserteilung/Bestätigung/Erlaubnis:", 0)
+		pdf.SecondLeaf("Auftragserteilung/Bestätigung/Erlaubnis:", 10)
 		pdf.LineHt(4.5)
 		pdf.SecondLeafAT("Ich bin berechtigt, die von mir in Auftrag gegebenen Arbeiten ausführen zu lassen. Der gesamte Rechnungsbetrag ist in bar oder per EC-Card wie vereinbart sofort vor Ort ohne Abzüge von mir zu entrichten. Auf die Möglichkeit geringfügiger Beschädigung wurde ich hingewiesen und ich akzeptiere, dass für die Öffnungsschäden infolge geringfügiger Fahrlässigkeit die Haftung ausgeschlossen ist. Aufgeführte Rechnungspositionen gelten als fest vereinbart. Regelungen wurden gelesen und bestätigt.")
 
 		//*Второй лист
 		//-Второй блок
-		pdf.SecondLeaf("Abnahmeprotokoll:", 0)
+		pdf.SecondLeaf("Abnahmeprotokoll:", 10)
 		pdf.LineHt(5)
 		pdf.AcceptanceReportAT(155, " • Wurde die Arbeit ohne Mängel angenommen")
 		pdf.AcceptanceReportAT(15, " [✓] Ja")
@@ -614,11 +614,11 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		pdf.LineHt(2)
 
 		//Третий блок
-		pdf.SecondLeaf("Die Zahlung werde ich jetzt sofort ohne Abzug vornehmen.", 0)
+		pdf.SecondLeaf("Die Zahlung werde ich jetzt sofort ohne Abzug vornehmen.", 10)
 		pdf.LineHt(2)
-		pdf.SecondLeaf(" [✓] keine Beanstandung der Arbeiten und Funktionen", 0)
+		pdf.SecondLeaf(" [✓] keine Beanstandung der Arbeiten und Funktionen", 10)
 		pdf.LineHt(2)
-		pdf.SecondLeaf(" [✓] für weitere Dienste ist Kontakt erwünscht", 0)
+		pdf.SecondLeaf(" [✓] für weitere Dienste ist Kontakt erwünscht", 10)
 		pdf.LineHt(30)
 
 		//Подпись
