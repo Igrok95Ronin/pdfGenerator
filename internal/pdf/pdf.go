@@ -50,7 +50,7 @@ type PdfDocument interface {
 	SecondLeaf(string, float64)
 	SecondLeafAT(string)
 	Signature(string, string, string, float64, float64, float64, float64, string, string)
-	AcceptanceReportAT(float64, string)
+	AcceptanceReportAT(float64, string, string)
 }
 
 func newPdfDocument() PdfDocument {
@@ -192,10 +192,10 @@ func (p *pdfDocument) SecondLeafAT(text string) {
 }
 
 // Отчет о приемке
-func (p *pdfDocument) AcceptanceReportAT(width float64, text string) {
+func (p *pdfDocument) AcceptanceReportAT(width float64, text, alignStr string) {
 	p.pdf.SetFont("Arial", "", 8) // Установка шрифта перед выводом текста
 	_, lineHt := p.pdf.GetFontSize()
-	p.pdf.CellFormat(width, lineHt*1.5, text, "0", 0, "L", false, 0, "")
+	p.pdf.CellFormat(width, lineHt*1.5, text, "0", 0, alignStr, false, 0, "")
 }
 
 // Подпись
@@ -643,17 +643,45 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		//-Второй блок
 		pdf.SecondLeaf("Abnahmeprotokoll:", 10)
 		pdf.LineHt(5)
-		pdf.AcceptanceReportAT(155, " • Wurde die Arbeit ohne Mängel angenommen")
-		pdf.AcceptanceReportAT(15, " [✓] Ja")
-		pdf.AcceptanceReportAT(20, " [ ] Nein")
+		pdf.AcceptanceReportAT(155, " • Wurde die Arbeit ohne Mängel angenommen", "L")
+		if jsn.Radio1 == "yes" {
+			pdf.CheckMark(171.0, 60.5, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMarkEmpty(187.5, 60.5, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		} else {
+			pdf.CheckMarkEmpty(171.0, 60.5, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMark(187.5, 60.5, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		}
 		pdf.LineHt(2)
-		pdf.AcceptanceReportAT(155, " • Die Rechnung wird in Preis und Inhallt akzeptiert und die Positionen wurden verständlich erklärt")
-		pdf.AcceptanceReportAT(15, " [✓] Ja")
-		pdf.AcceptanceReportAT(20, " [ ] Nein")
+
+		pdf.AcceptanceReportAT(155, " • Die Rechnung wird in Preis und Inhallt akzeptiert und die Positionen wurden verständlich erklärt", "L")
+		if jsn.Radio2 == "yes" {
+			pdf.CheckMark(171.0, 67.6, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMarkEmpty(187.5, 67.6, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		} else {
+			pdf.CheckMarkEmpty(171.0, 67.6, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMark(187.5, 67.6, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		}
 		pdf.LineHt(2)
-		pdf.AcceptanceReportAT(155, " • Sind mehrere Produkte angeboten worden")
-		pdf.AcceptanceReportAT(15, " [✓] Ja")
-		pdf.AcceptanceReportAT(20, " [ ] Nein")
+		pdf.AcceptanceReportAT(155, " • Sind mehrere Produkte angeboten worden", "L")
+		if jsn.Radio3 == "yes" {
+			pdf.CheckMark(171.0, 74.6, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMarkEmpty(187.5, 74.6, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		} else {
+			pdf.CheckMarkEmpty(171.0, 74.6, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMark(187.5, 74.6, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		}
 		pdf.LineHt(2)
 
 		//Третий блок
