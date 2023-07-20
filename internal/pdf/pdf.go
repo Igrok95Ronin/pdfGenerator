@@ -563,24 +563,31 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		pdf.LineHt(2.2)
 
 		//*Таблица
+		const (
+			WidthColumnTable1 = 93
+			WidthColumnTable2 = 18
+			WidthColumnTable3 = 33
+			WidthColumnTable4 = 46
+			HeightColumnTable = 10
+		)
 		//-Header
-		pdf.TableHeader(55.0, 14, " Bezeichnung / Leistung ", "L")
-		pdf.TableHeader(40.0, 14, " Menge ", "C")
-		pdf.TableHeader(45.0, 14, " Einzel-Preis (€) ", "C")
-		pdf.TableHeader(50.0, 14, " Netto Gesamtpreis (€) ", "C")
-		pdf.LineHt(4)
+		pdf.TableHeader(WidthColumnTable1, HeightColumnTable, " Bezeichnung / Leistung ", "L")
+		pdf.TableHeader(WidthColumnTable2, HeightColumnTable, " Menge ", "C")
+		pdf.TableHeader(WidthColumnTable3, HeightColumnTable, " Einzel-Preis (€) ", "C")
+		pdf.TableHeader(WidthColumnTable4, HeightColumnTable, " Netto Gesamtpreis (€) ", "C")
+		pdf.LineHt(2.9)
 
 		//-Body
 		for i := 0; i < len(jsn.Expenses); i++ {
-			if utf8.RuneCountInString(jsn.Expenses[i].Name) > 25 {
-				pdf.TableBody(55.0, 7, jsn.Expenses[i].Name, "L")
+			if utf8.RuneCountInString(jsn.Expenses[i].Name) > 40 {
+				pdf.TableBody(WidthColumnTable1, 6, jsn.Expenses[i].Name, "L")
 			} else {
-				pdf.TableBody(55.0, 14, jsn.Expenses[i].Name, "L")
+				pdf.TableBody(WidthColumnTable1, HeightColumnTable+2, " "+jsn.Expenses[i].Name, "L")
 			}
-			pdf.TableBody(40.0, 14, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
-			pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
-			pdf.TableBody(50.0, 14, strconv.FormatFloat(jsn.Expenses[i].PriceBuy*jsn.Expenses[i].Amount, 'f', -1, 64), "C")
-			pdf.LineHt(4)
+			pdf.TableBody(WidthColumnTable2, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
+			pdf.TableBody(WidthColumnTable3, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
+			pdf.TableBody(WidthColumnTable4, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].PriceBuy*jsn.Expenses[i].Amount, 'f', -1, 64), "C")
+			pdf.LineHt(3.4)
 		}
 		pdf.LineHt(2)
 
