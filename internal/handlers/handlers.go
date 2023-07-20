@@ -26,15 +26,8 @@ func Pdf(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	// Получаем часть URL после знака '?'
 	queryStr := parsedURL.RawQuery
 
-	// Декодируем URL
-	decodedQuery, err := url.QueryUnescape(queryStr)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
 	// Формируем новый URL, объединяя начало baseURL и декодированный URL
-	fullURL := fmt.Sprintf("%s%s", baseURL, decodedQuery)
+	fullURL := fmt.Sprintf("%s%s", baseURL, queryStr)
 
 	// Генерируем PDF, используя новый URL
 	pdf.GeneratePdf(fullURL, w)
