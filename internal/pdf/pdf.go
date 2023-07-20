@@ -483,7 +483,7 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		pdf.AddText(jsn.Name)
 
 		//-Правый строка ID
-		pdf.AddTextRight("Rechnung: " + jsn.RID)
+		pdf.AddTextRight("ID: " + jsn.RID)
 
 		//-Вторая строка
 		pdf.AddText(jsn.Street + " " + jsn.PropertyID)
