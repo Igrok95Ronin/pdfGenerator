@@ -39,15 +39,18 @@ type PdfDocument interface {
 	Header(string)
 	AddText(string)
 	AddTextRight(string)
+	AddTextRightAT(float64, string)
 	AddCheckBox(float64, string)
+	CheckMark(float64, float64, float64)
+	CheckMarkEmpty(float64, float64, float64)
 	TableHeader(float64, float64, string, string)
 	TableBody(float64, float64, string, string)
 	BottomBlock(float64, string, string)
 	Footer(string)
-	SecondLeaf(string)
+	SecondLeaf(string, float64)
 	SecondLeafAT(string)
 	Signature(string, string, string, float64, float64, float64, float64, string, string)
-	AcceptanceReportAT(float64, string)
+	AcceptanceReportAT(float64, string, string)
 }
 
 func newPdfDocument() PdfDocument {
@@ -73,7 +76,7 @@ func (p *pdfDocument) Header(text string) {
 
 // Верхний блок
 func (p *pdfDocument) AddText(text string) {
-	p.pdf.SetFont("Arial", "", 12) //шрифт,жирность,размер
+	p.pdf.SetFont("Arial", "", 10) //шрифт,жирность,размер
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.Ln(lineHt * 1.5)
 
@@ -83,12 +86,21 @@ func (p *pdfDocument) AddText(text string) {
 // Верхний блок,правая строка
 func (p *pdfDocument) AddTextRight(text string) {
 	p.pdf.AddUTF8Font("DejaVuSans", "B", "../../ui/static/fonts/DejaVuSans-Bold.ttf")
-	p.pdf.SetFont("DejaVuSans", "B", 12)
+	p.pdf.SetFont("DejaVuSans", "B", 10)
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.SetTextColor(52, 116, 178) //цвет текста
 
 	p.pdf.CellFormat(95, lineHt*3, text, "0", 0, "R", false, 0, "")
 	p.pdf.SetTextColor(0, 0, 0)
+}
+
+// Верхний блок,правая строка AT
+func (p *pdfDocument) AddTextRightAT(width float64, text string) {
+	p.pdf.SetFont("Arial", "", 10) //шрифт,жирность,размер
+	_, lineHt := p.pdf.GetFontSize()
+	//p.pdf.Ln(lineHt * 1.5)
+
+	p.pdf.CellFormat(width, lineHt, text, "0", 0, "R", false, 0, "")
 }
 
 // AddCheckBox
@@ -99,6 +111,23 @@ func (p *pdfDocument) AddCheckBox(width float64, text string) {
 	p.pdf.CellFormat(width, lineHt*2, text, "0", 0, "C", false, 0, "")
 }
 
+// check mark
+func (p *pdfDocument) CheckMark(x, y, size float64) {
+	p.pdf.SetDrawColor(0, 0, 0)
+	// Рисование квадрата (чек-бокса)
+	p.pdf.Rect(x, y, size, size, "D") // Функция Rect рисует прямоугольник. "D" означает, что прямоугольник только рисуется ("draw"), а не заливается цветом.
+	// Добавление галочки внутри квадрата (чек-бокса)
+	checkMarkSize := size / 2.0                                                                  // Размер галочки будет в два раза меньше размера чек-бокса
+	p.pdf.Line(x+checkMarkSize/3.5, y+checkMarkSize, x+checkMarkSize/1.5, y+checkMarkSize*1.5)   // Первая часть галочки
+	p.pdf.Line(x+checkMarkSize/1.5, y+checkMarkSize*1.5, x+checkMarkSize*1.7, y+checkMarkSize/2) // Вторая часть галочки
+
+}
+func (p *pdfDocument) CheckMarkEmpty(x, y, size float64) {
+	p.pdf.SetDrawColor(0, 0, 0)
+	// Рисование квадрата (чек-бокса)
+	p.pdf.Rect(x, y, size, size, "D") // Функция Rect рисует прямоугольник. "D" означает, что прямоугольник только рисуется ("draw"), а не заливается цветом.
+}
+
 // заголовок таблиц
 func (p *pdfDocument) TableHeader(width, height float64, text, alignStr string) {
 	p.pdf.SetFillColor(52, 116, 178)  // Установка цвета заливки для заголовка
@@ -106,15 +135,12 @@ func (p *pdfDocument) TableHeader(width, height float64, text, alignStr string) 
 	p.pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
 
 	p.pdf.AddUTF8Font("DejaVuSans", "B", "../../ui/static/fonts/DejaVuSans-Bold.ttf")
-	p.pdf.SetFont("DejaVuSans", "B", 10) //шрифт,жирность,размер
+	p.pdf.SetFont("DejaVuSans", "B", 9) //шрифт,жирность,размер
 
 	x, y := p.pdf.GetXY() // получение текущих координат X и Y
 
-	if text == " Jednotková \n cena bez DPH " {
-		p.pdf.MultiCell(width, 7, text, "1", alignStr, true)
-	} else {
-		p.pdf.MultiCell(width, height, text, "1", alignStr, true)
-	}
+	p.pdf.MultiCell(width, height, text, "1", alignStr, true)
+
 	p.pdf.SetXY(x+width, y) // установка новых координат X и Y, увеличиваем X
 }
 
@@ -124,6 +150,7 @@ func (p *pdfDocument) TableBody(width, height float64, text, alignStr string) {
 
 	p.pdf.SetFillColor(255, 255, 255) // Установка цвета заливки для заголовка
 	p.pdf.SetTextColor(0, 0, 0)       // Устанавливает цвет текста
+	p.pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
 	p.pdf.MultiCell(width, height, text, "1", alignStr, true)
 
 	p.pdf.SetXY(x+width, y) // установка новых координат X и Y, увеличиваем X
@@ -151,8 +178,9 @@ func (p *pdfDocument) Footer(text string) {
 }
 
 // Второй лист
-func (p *pdfDocument) SecondLeaf(text string) {
+func (p *pdfDocument) SecondLeaf(text string, leftMargin float64) {
 	p.pdf.SetFont("Arial", "", 10) // Установка шрифта перед выводом текста
+	p.pdf.SetLeftMargin(leftMargin)
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.CellFormat(190, lineHt+20, text, "0", 0, "L", false, 0, "")
 }
@@ -164,10 +192,10 @@ func (p *pdfDocument) SecondLeafAT(text string) {
 }
 
 // Отчет о приемке
-func (p *pdfDocument) AcceptanceReportAT(width float64, text string) {
+func (p *pdfDocument) AcceptanceReportAT(width float64, text, alignStr string) {
 	p.pdf.SetFont("Arial", "", 8) // Установка шрифта перед выводом текста
 	_, lineHt := p.pdf.GetFontSize()
-	p.pdf.CellFormat(width, lineHt*1.5, text, "0", 0, "L", false, 0, "")
+	p.pdf.CellFormat(width, lineHt*1.5, text, "0", 0, alignStr, false, 0, "")
 }
 
 // Подпись
@@ -224,7 +252,7 @@ func (p *pdfDocument) LineHt(ht float64) {
 	p.pdf.Ln(lineHt * ht) //перенос строки
 }
 
-func Pdf(url string, w http.ResponseWriter) {
+func GeneratePdf(url string, w http.ResponseWriter) {
 
 	jsn := &json.DataJsonStruct{}
 	jsn.Parse(url)
@@ -257,58 +285,80 @@ func Pdf(url string, w http.ResponseWriter) {
 		pdf.LineHt(7)
 
 		//*CheckBox
-
+		const (
+			Y    = 59
+			Size = 4
+		)
 		if jsn.CheckBox1 == "yes" {
-			pdf.AddCheckBox(37.5, "[✓] Objednavka")
+			pdf.CheckMark(13, Y, Size)
+			pdf.AddCheckBox(37.5, "Objednavka")
 		} else {
-			pdf.AddCheckBox(37.5, "[ ] Objednavka")
+			pdf.CheckMarkEmpty(13, Y, Size)
+			pdf.AddCheckBox(37.5, "Objednavka")
 		}
 		if jsn.CheckBox2 == "yes" {
-			pdf.AddCheckBox(24.5, "[✓] Nabidka")
+			pdf.CheckMark(47.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Nabidka")
 		} else {
-			pdf.AddCheckBox(24.5, "[ ] Nabidka")
+			pdf.CheckMarkEmpty(47.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Nabidka")
 		}
 		if jsn.CheckBox3 == "yes" {
-			pdf.AddCheckBox(36.5, "[✓] Konzultace")
+			pdf.CheckMark(75.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Konzultace")
 		} else {
-			pdf.AddCheckBox(36.5, "[ ] Konzultace")
+			pdf.CheckMarkEmpty(75.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Konzultace")
 		}
 		if jsn.CheckBox4 == "yes" {
-			pdf.AddCheckBox(36.5, "[✓] Nalehavost")
+			pdf.CheckMark(111.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Nalehavost")
 		} else {
-			pdf.AddCheckBox(36.5, "[ ] Nalehavost")
+			pdf.CheckMarkEmpty(111.5, Y, Size)
+			pdf.AddCheckBox(36.5, "Nalehavost")
 		}
 		if jsn.CheckBox5 == "yes" {
-			pdf.AddCheckBox(24.5, "[✓] Montaz")
+			pdf.CheckMark(145.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Montaz")
 		} else {
-			pdf.AddCheckBox(24.5, "[ ] Montaz")
+			pdf.CheckMarkEmpty(145.5, Y, Size)
+			pdf.AddCheckBox(24.5, "Montaz")
 		}
 		if jsn.CheckBox6 == "yes" {
-			pdf.AddCheckBox(30.5, "[✓] Pojisteni")
+			pdf.CheckMark(172.5, Y, Size)
+			pdf.AddCheckBox(30.5, "Pojisteni")
 		} else {
-			pdf.AddCheckBox(30.5, "[ ] Pojisteni")
+			pdf.CheckMarkEmpty(172.5, Y, Size)
+			pdf.AddCheckBox(30.5, "Pojisteni")
 		}
-		pdf.LineHt(3)
+		pdf.LineHt(2.2)
 
 		//*Таблица
+		const (
+			WidthColumnTable1 = 87
+			WidthColumnTable2 = 22
+			WidthColumnTable3 = 28
+			WidthColumnTable4 = 53
+			HeightColumnTable = 10
+		)
 		//-Header
-		pdf.TableHeader(55.0, 14, " Popis/Výkon ", "L")
-		pdf.TableHeader(45.0, 14, " Množství ", "C")
-		pdf.TableHeader(45.0, 14, " Cena za kus ", "C")
-		pdf.TableHeader(45.0, 14, " Jednotková \n cena bez DPH ", "C")
-		pdf.LineHt(4)
+		pdf.TableHeader(WidthColumnTable1, HeightColumnTable, " Popis/Výkon ", "L")
+		pdf.TableHeader(WidthColumnTable2, HeightColumnTable, " Množství ", "C")
+		pdf.TableHeader(WidthColumnTable3, HeightColumnTable, " Cena za kus ", "C")
+		pdf.TableHeader(WidthColumnTable4, HeightColumnTable, " Jednotková cena bez DPH ", "C")
+		pdf.LineHt(2.9)
 
 		//-Body
 		for i := 0; i < len(jsn.Expenses); i++ {
-			if utf8.RuneCountInString(jsn.Expenses[i].Name) > 25 {
-				pdf.TableBody(55.0, 7, jsn.Expenses[i].Name, "L")
+			if utf8.RuneCountInString(jsn.Expenses[i].Name) > 40 {
+				pdf.TableBody(WidthColumnTable1, 6, jsn.Expenses[i].Name, "L")
 			} else {
-				pdf.TableBody(55.0, 14, jsn.Expenses[i].Name, "L")
+				pdf.TableBody(WidthColumnTable1, HeightColumnTable+2, " "+jsn.Expenses[i].Name, "L")
 			}
-			pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
-			pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
-			pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].PriceBuy*jsn.Expenses[i].Amount, 'f', -1, 64), "C")
-			pdf.LineHt(4)
+			pdf.TableBody(WidthColumnTable2, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
+			pdf.TableBody(WidthColumnTable3, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
+			pdf.TableBody(WidthColumnTable4, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].PriceBuy*jsn.Expenses[i].Amount, 'f', -1, 64), "C")
+			pdf.LineHt(3.4)
 		}
 		pdf.LineHt(2)
 
@@ -356,30 +406,42 @@ func Pdf(url string, w http.ResponseWriter) {
 		pdf.Footer("Rychly servis bohemia 24/7 s.r.o, IČO 17973538, Braunerova 563/7, Libeň, 180 00 Praha 8\nBankovní účet: 5040636073/0800")
 
 		//*Второй лист
-		pdf.SecondLeaf("Přejímací protokol:")
+		const (
+			LeftMargin       = 16
+			SecondLeafHeight = 11.3
+		)
+		pdf.SecondLeaf("Přejímací protokol:", 0)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("[✓]  Práce byla převzata bez závad/Shora uvedené zboží bylo na přání namontováno.")
+		pdf.CheckMark(SecondLeafHeight, 26.5, Size)
+		pdf.SecondLeaf("Práce byla převzata bez závad/Shora uvedené zboží bylo na přání namontováno.", LeftMargin)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("[✓]  Faktura je akceptována ohledně ceny a obsahu a položky byly srozumitelně vysvětleny")
+		pdf.CheckMark(SecondLeafHeight, 33.5, Size)
+		pdf.SecondLeaf("Faktura je akceptována ohledně ceny a obsahu a položky byly srozumitelně vysvětleny", LeftMargin)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("[✓]  Zaplatim okamžitě bez srážek a nemám žádné")
+		pdf.CheckMark(SecondLeafHeight, 40.5, Size)
+		pdf.SecondLeaf("Zaplatim okamžitě bez srážek a nemám žádné", LeftMargin)
 		pdf.LineHt(10)
 
 		//*Второй лист
 		//-Второй блок
-		pdf.SecondLeaf("Splatné okamžitě bez srážky")
+		const (
+			SecondLeafSecondBlock = 10
+		)
+		pdf.SecondLeaf("", 0)
+		pdf.LineHt(0)
+		pdf.SecondLeaf("Splatné okamžitě bez srážky", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Zadání objednávky/potvrzeni/Povolení")
+		pdf.SecondLeaf("Zadání objednávky/potvrzeni/Povolení", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Jsem oprávnen nechat vykonat non zadané práce")
+		pdf.SecondLeaf("Jsem oprávnen nechat vykonat non zadané práce", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Celková účtovaná částka je podle domluvy splatná v hotovosti nebo")
+		pdf.SecondLeaf("Celková účtovaná částka je podle domluvy splatná v hotovosti nebo", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("platební kartou okamžité na mistě bez srážek. Byl jsem informován o možném")
+		pdf.SecondLeaf("platební kartou okamžité na mistě bez srážek. Byl jsem informován o možném", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("malém poškození a Akcepeji. 2e v pripade malé nedbalosti je ručené vyloučené.")
+		pdf.SecondLeaf("malém poškození a Akcepeji. 2e v pripade malé nedbalosti je ručené vyloučené.", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Provedené fakturované položky plati jako dohodmné. Tato ustanovení bylo přečteno a")
+		pdf.SecondLeaf("Provedené fakturované položky plati jako dohodmné. Tato ustanovení bylo přečteno a", SecondLeafSecondBlock)
 		pdf.LineHt(30)
 
 		//Подпись
@@ -389,12 +451,12 @@ func Pdf(url string, w http.ResponseWriter) {
 		if jsn.SignatureURL != "" {
 			pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/firstSignature.jpeg", 10, 230, 70, 0, jsn.SignatureURL, "firstSignature")
 		} else {
-			pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/defaultSignature.jpeg", 20, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
+			//pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/defaultSignature.jpeg", 20, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
 		}
 		if jsn.SignatureEndURL != "" {
 			pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/secondSignature.jpeg", 125, 230, 70, 0, jsn.SignatureEndURL, "secondSignature")
 		} else {
-			pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/defaultSignature.jpeg", 135, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
+			//pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/defaultSignature.jpeg", 135, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
 		}
 
 		//*Создаем pdf файл
@@ -423,7 +485,11 @@ func Pdf(url string, w http.ResponseWriter) {
 	} else if jsn.Country == "at" {
 
 		//*Заголовок документа
+<<<<<<< HEAD
 		//pdf.Header("AT")
+=======
+		pdf.Header("R E C H N U N G")
+>>>>>>> test
 		pdf.LineHt(2)
 
 		//*Верхний блок
@@ -431,68 +497,101 @@ func Pdf(url string, w http.ResponseWriter) {
 		pdf.AddText(jsn.Name)
 
 		//-Правый строка ID
-		pdf.AddTextRight("Rechnung: " + jsn.RID)
+		pdf.AddTextRight("ID: " + jsn.RID)
 
 		//-Вторая строка
 		pdf.AddText(jsn.Street + " " + jsn.PropertyID)
 
 		//-Третья строка
 		pdf.AddText(jsn.ZipCode + " " + jsn.City)
+		pdf.AddTextRightAT(95, "G&G Service")
+		pdf.LineHt(1.5)
+		pdf.AddTextRightAT(190, "Rainfelder Hauptstraße 25")
+		pdf.LineHt(1.5)
+		pdf.AddTextRightAT(190, "3162 St. Veit an der Gölsen")
+		pdf.LineHt(1.5)
+		pdf.AddTextRightAT(190, "ATU: in Bearbeitung")
+		pdf.LineHt(1.5)
+		pdf.AddTextRightAT(190, "Email: rechnungen.service@gmail.com")
+
 		pdf.LineHt(7)
 
 		//*CheckBox
-
+		const (
+			Y    = 80.2
+			Size = 4
+		)
+		//3
 		if jsn.CheckBox1 == "yes" {
-			pdf.AddCheckBox(32.5, "[✓] Bestellung")
+			pdf.CheckMark(12, Y, Size)
+			pdf.AddCheckBox(32.5, "Bestellung")
 		} else {
-			pdf.AddCheckBox(32.5, "[ ] Bestellung")
+			pdf.CheckMarkEmpty(12, Y, Size)
+			pdf.AddCheckBox(32.5, "Bestellung")
 		}
 		if jsn.CheckBox2 == "yes" {
-			pdf.AddCheckBox(23.5, "[✓] Angebot")
+			pdf.CheckMark(44.5, Y, Size)
+			pdf.AddCheckBox(29.0, "Angebot")
 		} else {
-			pdf.AddCheckBox(23.5, "[ ] Angebot")
+			pdf.CheckMarkEmpty(44.5, Y, Size)
+			pdf.AddCheckBox(29.0, "Angebot")
 		}
 		if jsn.CheckBox3 == "yes" {
-			pdf.AddCheckBox(28.5, "[✓] Beratung")
+			pdf.CheckMark(73.5, Y, Size)
+			pdf.AddCheckBox(30.0, "Beratung")
 		} else {
-			pdf.AddCheckBox(28.5, "[ ] Beratung")
+			pdf.CheckMarkEmpty(73.5, Y, Size)
+			pdf.AddCheckBox(30.0, "Beratung")
 		}
 		if jsn.CheckBox4 == "yes" {
-			pdf.AddCheckBox(28.5, "[✓] Notdienst")
+			pdf.CheckMark(103.5, Y, Size)
+			pdf.AddCheckBox(30.5, "Notdienst")
 		} else {
-			pdf.AddCheckBox(28.5, "[ ] Notdienst")
+			pdf.CheckMarkEmpty(103.5, Y, Size)
+			pdf.AddCheckBox(30.5, "Notdienst")
 		}
 		if jsn.CheckBox5 == "yes" {
-			pdf.AddCheckBox(23.5, "[✓] Montage")
+			pdf.CheckMark(134.5, Y, Size)
+			pdf.AddCheckBox(28.5, "Montage")
 		} else {
-			pdf.AddCheckBox(23.5, "[ ] Montage")
+			pdf.CheckMarkEmpty(134.0, Y, Size)
+			pdf.AddCheckBox(28.5, "Montage")
 		}
 		if jsn.CheckBox6 == "yes" {
-			pdf.AddCheckBox(52.5, "[✓] Haushaltsversicherung")
+			pdf.CheckMark(163.5, Y, Size)
+			pdf.AddCheckBox(39.5, "Versicherung")
 		} else {
-			pdf.AddCheckBox(52.5, "[ ] Haushaltsversicherung")
+			pdf.CheckMarkEmpty(163.5, Y, Size)
+			pdf.AddCheckBox(39.5, "Versicherung")
 		}
-		pdf.LineHt(3)
+		pdf.LineHt(2.2)
 
 		//*Таблица
+		const (
+			WidthColumnTable1 = 93
+			WidthColumnTable2 = 18
+			WidthColumnTable3 = 33
+			WidthColumnTable4 = 46
+			HeightColumnTable = 10
+		)
 		//-Header
-		pdf.TableHeader(55.0, 14, " Bezeichnung / Leistung ", "L")
-		pdf.TableHeader(40.0, 14, " Menge ", "C")
-		pdf.TableHeader(45.0, 14, " Einzel-Preis (€) ", "C")
-		pdf.TableHeader(50.0, 14, " Netto Gesamtpreis (€) ", "C")
-		pdf.LineHt(4)
+		pdf.TableHeader(WidthColumnTable1, HeightColumnTable, " Bezeichnung / Leistung ", "L")
+		pdf.TableHeader(WidthColumnTable2, HeightColumnTable, " Menge ", "C")
+		pdf.TableHeader(WidthColumnTable3, HeightColumnTable, " Einzel-Preis (€) ", "C")
+		pdf.TableHeader(WidthColumnTable4, HeightColumnTable, " Netto Gesamtpreis (€) ", "C")
+		pdf.LineHt(2.9)
 
 		//-Body
 		for i := 0; i < len(jsn.Expenses); i++ {
-			if utf8.RuneCountInString(jsn.Expenses[i].Name) > 25 {
-				pdf.TableBody(55.0, 7, jsn.Expenses[i].Name, "L")
+			if utf8.RuneCountInString(jsn.Expenses[i].Name) > 40 {
+				pdf.TableBody(WidthColumnTable1, 6, jsn.Expenses[i].Name, "L")
 			} else {
-				pdf.TableBody(55.0, 14, jsn.Expenses[i].Name, "L")
+				pdf.TableBody(WidthColumnTable1, HeightColumnTable+2, " "+jsn.Expenses[i].Name, "L")
 			}
-			pdf.TableBody(40.0, 14, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
-			pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
-			pdf.TableBody(50.0, 14, strconv.FormatFloat(jsn.Expenses[i].PriceBuy*jsn.Expenses[i].Amount, 'f', -1, 64), "C")
-			pdf.LineHt(4)
+			pdf.TableBody(WidthColumnTable2, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
+			pdf.TableBody(WidthColumnTable3, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
+			pdf.TableBody(WidthColumnTable4, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].PriceBuy*jsn.Expenses[i].Amount, 'f', -1, 64), "C")
+			pdf.LineHt(3.4)
 		}
 		pdf.LineHt(2)
 
@@ -540,33 +639,71 @@ func Pdf(url string, w http.ResponseWriter) {
 		pdf.Footer("Raiffeisen, IBAN: AT42 3200 0000 1363 8788, BIC: RLNWATWWXXX")
 
 		//*Второй лист
-		pdf.SecondLeaf("Auftragserteilung/Bestätigung/Erlaubnis:")
+		pdf.SecondLeaf("Auftragserteilung/Bestätigung/Erlaubnis:", 10)
 		pdf.LineHt(4.5)
 		pdf.SecondLeafAT("Ich bin berechtigt, die von mir in Auftrag gegebenen Arbeiten ausführen zu lassen. Der gesamte Rechnungsbetrag ist in bar oder per EC-Card wie vereinbart sofort vor Ort ohne Abzüge von mir zu entrichten. Auf die Möglichkeit geringfügiger Beschädigung wurde ich hingewiesen und ich akzeptiere, dass für die Öffnungsschäden infolge geringfügiger Fahrlässigkeit die Haftung ausgeschlossen ist. Aufgeführte Rechnungspositionen gelten als fest vereinbart. Regelungen wurden gelesen und bestätigt.")
 
 		//*Второй лист
 		//-Второй блок
-		pdf.SecondLeaf("Abnahmeprotokoll:")
+		pdf.SecondLeaf("Abnahmeprotokoll:", 10)
 		pdf.LineHt(5)
-		pdf.AcceptanceReportAT(155, " • Wurde die Arbeit ohne Mängel angenommen")
-		pdf.AcceptanceReportAT(15, " [✓] Ja")
-		pdf.AcceptanceReportAT(20, " [ ] Nein")
+		pdf.AcceptanceReportAT(155, " • Wurde die Arbeit ohne Mängel angenommen", "L")
+		if jsn.Radio1 == "yes" {
+			pdf.CheckMark(171.0, 60.5, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMarkEmpty(187.5, 60.5, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		} else {
+			pdf.CheckMarkEmpty(171.0, 60.5, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMark(187.5, 60.5, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		}
 		pdf.LineHt(2)
-		pdf.AcceptanceReportAT(155, " • Die Rechnung wird in Preis und Inhallt akzeptiert und die Positionen wurden verständlich erklärt")
-		pdf.AcceptanceReportAT(15, " [✓] Ja")
-		pdf.AcceptanceReportAT(20, " [ ] Nein")
+
+		pdf.AcceptanceReportAT(155, " • Die Rechnung wird in Preis und Inhallt akzeptiert und die Positionen wurden verständlich erklärt", "L")
+		if jsn.Radio2 == "yes" {
+			pdf.CheckMark(171.0, 67.6, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMarkEmpty(187.5, 67.6, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		} else {
+			pdf.CheckMarkEmpty(171.0, 67.6, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMark(187.5, 67.6, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		}
 		pdf.LineHt(2)
-		pdf.AcceptanceReportAT(155, " • Sind mehrere Produkte angeboten worden")
-		pdf.AcceptanceReportAT(15, " [✓] Ja")
-		pdf.AcceptanceReportAT(20, " [ ] Nein")
+		pdf.AcceptanceReportAT(155, " • Sind mehrere Produkte angeboten worden", "L")
+		if jsn.Radio3 == "yes" {
+			pdf.CheckMark(171.0, 74.6, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMarkEmpty(187.5, 74.6, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		} else {
+			pdf.CheckMarkEmpty(171.0, 74.6, Size)
+			pdf.AcceptanceReportAT(15, "Ja", "R")
+			pdf.CheckMark(187.5, 74.6, Size)
+			pdf.AcceptanceReportAT(20, "Nein", "R")
+		}
 		pdf.LineHt(2)
 
 		//Третий блок
-		pdf.SecondLeaf("Die Zahlung werde ich jetzt sofort ohne Abzug vornehmen.")
+		pdf.SecondLeaf("Die Zahlung werde ich jetzt sofort ohne Abzug vornehmen.", 10)
 		pdf.LineHt(2)
-		pdf.SecondLeaf(" [✓] keine Beanstandung der Arbeiten und Funktionen")
+		if jsn.Radio4 == "yes" {
+			pdf.CheckMark(13.0, 98.2, Size)
+		} else {
+			pdf.CheckMarkEmpty(13.0, 98.2, Size)
+		}
+		pdf.SecondLeaf("keine Beanstandung der Arbeiten und Funktionen", 17)
 		pdf.LineHt(2)
-		pdf.SecondLeaf(" [✓] für weitere Dienste ist Kontakt erwünscht")
+		if jsn.Radio5 == "yes" {
+			pdf.CheckMark(13.0, 105.0, Size)
+		} else {
+			pdf.CheckMarkEmpty(13.0, 105.0, Size)
+		}
+		pdf.SecondLeaf("für weitere Dienste ist Kontakt erwünscht", 10)
 		pdf.LineHt(30)
 
 		//Подпись
@@ -576,12 +713,12 @@ func Pdf(url string, w http.ResponseWriter) {
 		if jsn.SignatureURL != "" {
 			pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/firstSignature.jpeg", 10, 230, 70, 0, jsn.SignatureURL, "firstSignature")
 		} else {
-			pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/defaultSignature.jpeg", 20, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
+			//pdf.Signature("Datum a podpis objednávky: "+dateString, "L", "../../ui/static/img/defaultSignature.jpeg", 20, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
 		}
 		if jsn.SignatureEndURL != "" {
 			pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/secondSignature.jpeg", 125, 230, 70, 0, jsn.SignatureEndURL, "secondSignature")
 		} else {
-			pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/defaultSignature.jpeg", 135, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
+			//pdf.Signature("Datum a podpis objednávky: "+dateString, "R", "../../ui/static/img/defaultSignature.jpeg", 135, 230, 50, 0, jsn.SignatureEndURL, "defaultSignature")
 		}
 
 		//*Создаем pdf файл

@@ -1,37 +1,26 @@
 package main
 
 import (
-	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net"
 	"net/http"
-	"pdgGenerator/internal/pdf"
+	"pdgGenerator/internal/handlers"
 	"time"
 )
-
-func Pdf(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-
-	queryParam := r.URL.Query().Get("url")
-
-	fmt.Println(queryParam)
-
-	pdf.Pdf(queryParam, w)
-
-}
 
 // test
 func main() {
 	log.Println("Create router")
 	router := httprouter.New()
-	router.GET("/pdf", Pdf)
+	router.GET("/generate_pdf", handlers.Pdf)
 
 	start(router)
 }
 
 func start(router *httprouter.Router) {
 	const (
-		port = ":1234"
+		port = ":8080"
 	)
 	log.Println("Start application")
 	listener, err := net.Listen("tcp", port)
