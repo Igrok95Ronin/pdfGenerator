@@ -46,7 +46,7 @@ type PdfDocument interface {
 	TableBody(float64, float64, string, string)
 	BottomBlock(float64, string, string)
 	Footer(string)
-	SecondLeaf(string)
+	SecondLeaf(string, float64)
 	SecondLeafAT(string)
 	Signature(string, string, string, float64, float64, float64, float64, string, string)
 	AcceptanceReportAT(float64, string)
@@ -103,6 +103,7 @@ func (p *pdfDocument) AddCheckBox(width float64, text string) {
 
 // check mark
 func (p *pdfDocument) CheckMark(x, y, size float64) {
+	p.pdf.SetDrawColor(0, 0, 0)
 	// Рисование квадрата (чек-бокса)
 	p.pdf.Rect(x, y, size, size, "D") // Функция Rect рисует прямоугольник. "D" означает, что прямоугольник только рисуется ("draw"), а не заливается цветом.
 	// Добавление галочки внутри квадрата (чек-бокса)
@@ -112,6 +113,7 @@ func (p *pdfDocument) CheckMark(x, y, size float64) {
 
 }
 func (p *pdfDocument) CheckMarkEmpty(x, y, size float64) {
+	p.pdf.SetDrawColor(0, 0, 0)
 	// Рисование квадрата (чек-бокса)
 	p.pdf.Rect(x, y, size, size, "D") // Функция Rect рисует прямоугольник. "D" означает, что прямоугольник только рисуется ("draw"), а не заливается цветом.
 }
@@ -138,6 +140,7 @@ func (p *pdfDocument) TableBody(width, height float64, text, alignStr string) {
 
 	p.pdf.SetFillColor(255, 255, 255) // Установка цвета заливки для заголовка
 	p.pdf.SetTextColor(0, 0, 0)       // Устанавливает цвет текста
+	p.pdf.SetDrawColor(227, 227, 227) // Устанавливаем цвет границы в синий
 	p.pdf.MultiCell(width, height, text, "1", alignStr, true)
 
 	p.pdf.SetXY(x+width, y) // установка новых координат X и Y, увеличиваем X
@@ -165,8 +168,9 @@ func (p *pdfDocument) Footer(text string) {
 }
 
 // Второй лист
-func (p *pdfDocument) SecondLeaf(text string) {
+func (p *pdfDocument) SecondLeaf(text string, leftMargin float64) {
 	p.pdf.SetFont("Arial", "", 10) // Установка шрифта перед выводом текста
+	p.pdf.SetLeftMargin(leftMargin)
 	_, lineHt := p.pdf.GetFontSize()
 	p.pdf.CellFormat(190, lineHt+20, text, "0", 0, "L", false, 0, "")
 }
@@ -336,7 +340,7 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 
 		//-Body
 		for i := 0; i < len(jsn.Expenses); i++ {
-			if utf8.RuneCountInString(jsn.Expenses[i].Name) > 25 {
+			if utf8.RuneCountInString(jsn.Expenses[i].Name) > 40 {
 				pdf.TableBody(WidthColumnTable1, 6, jsn.Expenses[i].Name, "L")
 			} else {
 				pdf.TableBody(WidthColumnTable1, HeightColumnTable+2, " "+jsn.Expenses[i].Name, "L")
@@ -392,30 +396,37 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		pdf.Footer("Rychly servis bohemia 24/7 s.r.o, IČO 17973538, Braunerova 563/7, Libeň, 180 00 Praha 8\nBankovní účet: 5040636073/0800")
 
 		//*Второй лист
-		pdf.SecondLeaf("Přejímací protokol:")
+		const (
+			LeftMargin       = 16
+			SecondLeafHeight = 11.3
+		)
+		pdf.SecondLeaf("Přejímací protokol:", 0)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("[✓]  Práce byla převzata bez závad/Shora uvedené zboží bylo na přání namontováno.")
+		pdf.CheckMark(SecondLeafHeight, 26.5, Size)
+		pdf.SecondLeaf("Práce byla převzata bez závad/Shora uvedené zboží bylo na přání namontováno.", LeftMargin)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("[✓]  Faktura je akceptována ohledně ceny a obsahu a položky byly srozumitelně vysvětleny")
+		pdf.CheckMark(SecondLeafHeight, 33.5, Size)
+		pdf.SecondLeaf("Faktura je akceptována ohledně ceny a obsahu a položky byly srozumitelně vysvětleny", LeftMargin)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("[✓]  Zaplatim okamžitě bez srážek a nemám žádné")
+		pdf.CheckMark(SecondLeafHeight, 40.5, Size)
+		pdf.SecondLeaf("Zaplatim okamžitě bez srážek a nemám žádné", LeftMargin)
 		pdf.LineHt(10)
 
 		//*Второй лист
 		//-Второй блок
-		pdf.SecondLeaf("Splatné okamžitě bez srážky")
+		pdf.SecondLeaf("Splatné okamžitě bez srážky", 0)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Zadání objednávky/potvrzeni/Povolení")
+		pdf.SecondLeaf("Zadání objednávky/potvrzeni/Povolení", 0)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Jsem oprávnen nechat vykonat non zadané práce")
+		pdf.SecondLeaf("Jsem oprávnen nechat vykonat non zadané práce", 0)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Celková účtovaná částka je podle domluvy splatná v hotovosti nebo")
+		pdf.SecondLeaf("Celková účtovaná částka je podle domluvy splatná v hotovosti nebo", 0)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("platební kartou okamžité na mistě bez srážek. Byl jsem informován o možném")
+		pdf.SecondLeaf("platební kartou okamžité na mistě bez srážek. Byl jsem informován o možném", 0)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("malém poškození a Akcepeji. 2e v pripade malé nedbalosti je ručené vyloučené.")
+		pdf.SecondLeaf("malém poškození a Akcepeji. 2e v pripade malé nedbalosti je ručené vyloučené.", 0)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Provedené fakturované položky plati jako dohodmné. Tato ustanovení bylo přečteno a")
+		pdf.SecondLeaf("Provedené fakturované položky plati jako dohodmné. Tato ustanovení bylo přečteno a", 0)
 		pdf.LineHt(30)
 
 		//Подпись
@@ -576,13 +587,13 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		pdf.Footer("Raiffeisen, IBAN: AT42 3200 0000 1363 8788, BIC: RLNWATWWXXX")
 
 		//*Второй лист
-		pdf.SecondLeaf("Auftragserteilung/Bestätigung/Erlaubnis:")
+		pdf.SecondLeaf("Auftragserteilung/Bestätigung/Erlaubnis:", 0)
 		pdf.LineHt(4.5)
 		pdf.SecondLeafAT("Ich bin berechtigt, die von mir in Auftrag gegebenen Arbeiten ausführen zu lassen. Der gesamte Rechnungsbetrag ist in bar oder per EC-Card wie vereinbart sofort vor Ort ohne Abzüge von mir zu entrichten. Auf die Möglichkeit geringfügiger Beschädigung wurde ich hingewiesen und ich akzeptiere, dass für die Öffnungsschäden infolge geringfügiger Fahrlässigkeit die Haftung ausgeschlossen ist. Aufgeführte Rechnungspositionen gelten als fest vereinbart. Regelungen wurden gelesen und bestätigt.")
 
 		//*Второй лист
 		//-Второй блок
-		pdf.SecondLeaf("Abnahmeprotokoll:")
+		pdf.SecondLeaf("Abnahmeprotokoll:", 0)
 		pdf.LineHt(5)
 		pdf.AcceptanceReportAT(155, " • Wurde die Arbeit ohne Mängel angenommen")
 		pdf.AcceptanceReportAT(15, " [✓] Ja")
@@ -598,11 +609,11 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		pdf.LineHt(2)
 
 		//Третий блок
-		pdf.SecondLeaf("Die Zahlung werde ich jetzt sofort ohne Abzug vornehmen.")
+		pdf.SecondLeaf("Die Zahlung werde ich jetzt sofort ohne Abzug vornehmen.", 0)
 		pdf.LineHt(2)
-		pdf.SecondLeaf(" [✓] keine Beanstandung der Arbeiten und Funktionen")
+		pdf.SecondLeaf(" [✓] keine Beanstandung der Arbeiten und Funktionen", 0)
 		pdf.LineHt(2)
-		pdf.SecondLeaf(" [✓] für weitere Dienste ist Kontakt erwünscht")
+		pdf.SecondLeaf(" [✓] für weitere Dienste ist Kontakt erwünscht", 0)
 		pdf.LineHt(30)
 
 		//Подпись
