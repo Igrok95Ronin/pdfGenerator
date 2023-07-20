@@ -414,19 +414,24 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 
 		//*Второй лист
 		//-Второй блок
-		pdf.SecondLeaf("Splatné okamžitě bez srážky", 0)
+		const (
+			SecondLeafSecondBlock = 10
+		)
+		pdf.SecondLeaf("", 0)
+		pdf.LineHt(0)
+		pdf.SecondLeaf("Splatné okamžitě bez srážky", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Zadání objednávky/potvrzeni/Povolení", 0)
+		pdf.SecondLeaf("Zadání objednávky/potvrzeni/Povolení", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Jsem oprávnen nechat vykonat non zadané práce", 0)
+		pdf.SecondLeaf("Jsem oprávnen nechat vykonat non zadané práce", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Celková účtovaná částka je podle domluvy splatná v hotovosti nebo", 0)
+		pdf.SecondLeaf("Celková účtovaná částka je podle domluvy splatná v hotovosti nebo", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("platební kartou okamžité na mistě bez srážek. Byl jsem informován o možném", 0)
+		pdf.SecondLeaf("platební kartou okamžité na mistě bez srážek. Byl jsem informován o možném", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("malém poškození a Akcepeji. 2e v pripade malé nedbalosti je ručené vyloučené.", 0)
+		pdf.SecondLeaf("malém poškození a Akcepeji. 2e v pripade malé nedbalosti je ručené vyloučené.", SecondLeafSecondBlock)
 		pdf.LineHt(2)
-		pdf.SecondLeaf("Provedené fakturované položky plati jako dohodmné. Tato ustanovení bylo přečteno a", 0)
+		pdf.SecondLeaf("Provedené fakturované položky plati jako dohodmné. Tato ustanovení bylo přečteno a", SecondLeafSecondBlock)
 		pdf.LineHt(30)
 
 		//Подпись
