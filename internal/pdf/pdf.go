@@ -517,47 +517,48 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 			Y    = 80.2
 			Size = 4
 		)
+		//3
 		if jsn.CheckBox1 == "yes" {
-			pdf.CheckMark(13, Y, Size)
-			pdf.AddCheckBox(37.5, "Bestellung")
+			pdf.CheckMark(12, Y, Size)
+			pdf.AddCheckBox(32.5, "Bestellung")
 		} else {
-			pdf.CheckMarkEmpty(13, Y, Size)
-			pdf.AddCheckBox(37.5, "Bestellung")
+			pdf.CheckMarkEmpty(12, Y, Size)
+			pdf.AddCheckBox(32.5, "Bestellung")
 		}
 		if jsn.CheckBox2 == "yes" {
-			pdf.CheckMark(47.5, Y, Size)
-			pdf.AddCheckBox(24.5, "Angebot")
+			pdf.CheckMark(44.5, Y, Size)
+			pdf.AddCheckBox(29.0, "Angebot")
 		} else {
-			pdf.CheckMarkEmpty(47.5, Y, Size)
-			pdf.AddCheckBox(24.5, "Angebot")
+			pdf.CheckMarkEmpty(44.5, Y, Size)
+			pdf.AddCheckBox(29.0, "Angebot")
 		}
 		if jsn.CheckBox3 == "yes" {
-			pdf.CheckMark(75.5, Y, Size)
-			pdf.AddCheckBox(36.5, "Beratung")
+			pdf.CheckMark(73.5, Y, Size)
+			pdf.AddCheckBox(30.0, "Beratung")
 		} else {
-			pdf.CheckMarkEmpty(75.5, Y, Size)
-			pdf.AddCheckBox(36.5, "Beratung")
+			pdf.CheckMarkEmpty(73.5, Y, Size)
+			pdf.AddCheckBox(30.0, "Beratung")
 		}
 		if jsn.CheckBox4 == "yes" {
-			pdf.CheckMark(111.5, Y, Size)
-			pdf.AddCheckBox(36.5, "Notdienst")
+			pdf.CheckMark(103.5, Y, Size)
+			pdf.AddCheckBox(30.5, "Notdienst")
 		} else {
-			pdf.CheckMarkEmpty(111.5, Y, Size)
-			pdf.AddCheckBox(36.5, "Notdienst")
+			pdf.CheckMarkEmpty(103.5, Y, Size)
+			pdf.AddCheckBox(30.5, "Notdienst")
 		}
 		if jsn.CheckBox5 == "yes" {
-			pdf.CheckMark(145.5, Y, Size)
-			pdf.AddCheckBox(24.5, "Montage")
+			pdf.CheckMark(134.5, Y, Size)
+			pdf.AddCheckBox(28.5, "Montage")
 		} else {
-			pdf.CheckMarkEmpty(145.5, Y, Size)
-			pdf.AddCheckBox(24.5, "Montage")
+			pdf.CheckMarkEmpty(134.0, Y, Size)
+			pdf.AddCheckBox(28.5, "Montage")
 		}
 		if jsn.CheckBox6 == "yes" {
-			pdf.CheckMark(172.5, Y, Size)
-			pdf.AddCheckBox(30.5, "Versicherung")
+			pdf.CheckMark(163.5, Y, Size)
+			pdf.AddCheckBox(39.5, "Versicherung")
 		} else {
-			pdf.CheckMarkEmpty(172.5, Y, Size)
-			pdf.AddCheckBox(30.5, "Versicherung")
+			pdf.CheckMarkEmpty(163.5, Y, Size)
+			pdf.AddCheckBox(39.5, "Versicherung")
 		}
 		pdf.LineHt(2.2)
 
