@@ -127,11 +127,8 @@ func (p *pdfDocument) TableHeader(width, height float64, text, alignStr string) 
 
 	x, y := p.pdf.GetXY() // получение текущих координат X и Y
 
-	if text == " Jednotková \n cena bez DPH " {
-		p.pdf.MultiCell(width, 7, text, "1", alignStr, true)
-	} else {
-		p.pdf.MultiCell(width, height, text, "1", alignStr, true)
-	}
+	p.pdf.MultiCell(width, height, text, "1", alignStr, true)
+
 	p.pdf.SetXY(x+width, y) // установка новых координат X и Y, увеличиваем X
 }
 
@@ -323,24 +320,31 @@ func GeneratePdf(url string, w http.ResponseWriter) {
 		pdf.LineHt(2.2)
 
 		//*Таблица
+		const (
+			WidthColumnTable1 = 87
+			WidthColumnTable2 = 22
+			WidthColumnTable3 = 28
+			WidthColumnTable4 = 53
+			HeightColumnTable = 10
+		)
 		//-Header
-		pdf.TableHeader(70.0, 14, " Popis/Výkon ", "L")
-		pdf.TableHeader(30.0, 14, " Množství ", "C")
-		pdf.TableHeader(30.0, 14, " Cena za kus ", "C")
-		pdf.TableHeader(60.0, 14, " Jednotková cena bez DPH ", "C")
-		pdf.LineHt(4)
+		pdf.TableHeader(WidthColumnTable1, HeightColumnTable, " Popis/Výkon ", "L")
+		pdf.TableHeader(WidthColumnTable2, HeightColumnTable, " Množství ", "C")
+		pdf.TableHeader(WidthColumnTable3, HeightColumnTable, " Cena za kus ", "C")
+		pdf.TableHeader(WidthColumnTable4, HeightColumnTable, " Jednotková cena bez DPH ", "C")
+		pdf.LineHt(2.9)
 
 		//-Body
 		for i := 0; i < len(jsn.Expenses); i++ {
 			if utf8.RuneCountInString(jsn.Expenses[i].Name) > 25 {
-				pdf.TableBody(55.0, 7, jsn.Expenses[i].Name, "L")
+				pdf.TableBody(WidthColumnTable1, 6, jsn.Expenses[i].Name, "L")
 			} else {
-				pdf.TableBody(55.0, 14, jsn.Expenses[i].Name, "L")
+				pdf.TableBody(WidthColumnTable1, HeightColumnTable+2, " "+jsn.Expenses[i].Name, "L")
 			}
-			pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
-			pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
-			pdf.TableBody(45.0, 14, strconv.FormatFloat(jsn.Expenses[i].PriceBuy*jsn.Expenses[i].Amount, 'f', -1, 64), "C")
-			pdf.LineHt(4)
+			pdf.TableBody(WidthColumnTable2, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].Amount, 'f', -1, 64), "C")
+			pdf.TableBody(WidthColumnTable3, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].Price, 'f', -1, 64), "C")
+			pdf.TableBody(WidthColumnTable4, HeightColumnTable+2, strconv.FormatFloat(jsn.Expenses[i].PriceBuy*jsn.Expenses[i].Amount, 'f', -1, 64), "C")
+			pdf.LineHt(3.4)
 		}
 		pdf.LineHt(2)
 
